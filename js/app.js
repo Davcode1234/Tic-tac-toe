@@ -111,6 +111,9 @@ const AIPick = () => {
   } else {
     return;
   }
+  if (checkIfPlayerWin(`${state.AIMark}`)) {
+    console.log("Computer won");
+  }
 };
 
 const handleTileClick = (e) => {
@@ -118,10 +121,8 @@ const handleTileClick = (e) => {
   const tile = e.target;
   playerPick(tile);
   setTimeout(AIPick, 1000);
-  if (checkIfPlayerWin(`${state.AIMark}`)) {
+  if (checkIfPlayerWin(`${state.playerMark}`)) {
     console.log("Player won");
-  } else if (checkIfPlayerWin(`${state.playerMark}`)) {
-    console.log("Computer won");
   }
 };
 
