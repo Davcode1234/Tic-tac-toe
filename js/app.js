@@ -15,9 +15,44 @@ const winMap = [
 let tiles = [];
 const boardSize = 9;
 
-// let state = {
-//     playerMark:
-// }
+let state = {
+  playerMark: null,
+  AIMark: null,
+  playerScore: 0,
+  AIScore: 0,
+  draws: 0,
+};
+
+const playerPickMark = () => {
+  document.querySelectorAll(".mark").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      updatePlayerMark(e.target.dataset.mark);
+      updateAIMark();
+    });
+  });
+};
+
+const updateAIMark = () => {
+  if (state.playerMark == "x") {
+    state = {
+      ...state,
+      AIMark: "o",
+    };
+  } else {
+    state = {
+      ...state,
+      AIMark: "x",
+    };
+  }
+};
+
+const updatePlayerMark = (pickedOption) => {
+  state = {
+    ...state,
+    playerMark: pickedOption,
+  };
+};
 
 const createBoard = () => {
   for (let i = 0; i < boardSize; i++) {
@@ -32,22 +67,28 @@ const startGame = () => {
   startScreen.classList.add("hidden");
   board.classList.remove("hidden");
   board.classList.add("active");
+  console.log("Player", state.playerMark);
+  console.log("AI", state.AIMark);
 };
 
 const handleClick = () => {
   startGame();
 };
-const handleMarkRender = (tile, mark) => {
+const handleMarkRender = (tile, mark, player = true) => {
+  let tileClass = "";
+  player
+    ? (tileClass = `${state.playerMark}`)
+    : (tileClass = `${state.AIMark}`);
   tile.appendChild(mark);
   tile.classList.remove("empty");
   tile.classList.add("full");
-  tile.classList.add("X");
+  tile.classList.add(tileClass);
   tile.removeEventListener("click", handleTileClick);
 };
 
 const playerPick = (tile) => {
   const mark = document.createElement("img");
-  mark.src = "./images/icons/icon-x.svg";
+  mark.src = `./images/icons/icon-${state.playerMark}.svg`;
   handleMarkRender(tile, mark);
 };
 
@@ -55,15 +96,15 @@ const AIPick = () => {
   const emptySpaces = document.querySelectorAll(".empty");
   const randomIndex = Math.floor(Math.random() * emptySpaces.length);
   const mark = document.createElement("img");
-  mark.src = "./images/icons/icon-o.svg";
+  mark.src = `./images/icons/icon-${state.AIMark}.svg`;
   const randomTile = tiles[randomIndex];
 
   if (randomTile.classList.contains("empty")) {
-    handleMarkRender(randomTile, mark);
+    handleMarkRender(randomTile, mark, (player = false));
   } else if (randomTile.classList.contains("full")) {
     const randomEmptyTile = Array.from(emptySpaces)[randomIndex];
     if (randomEmptyTile) {
-      handleMarkRender(randomEmptyTile, mark);
+      handleMarkRender(randomEmptyTile, mark, (player = false));
     } else {
       return;
     }
@@ -76,16 +117,23 @@ const handleTileClick = (e) => {
   e.preventDefault();
   const tile = e.target;
   playerPick(tile);
-  AIPick();
-  if (checkIfWin()) {
-    console.log("X won");
+  setTimeout(AIPick, 1000);
+  if (checkIfPlayerWin(`${state.AIMark}`)) {
+    console.log("Player won");
+  } else if (checkIfPlayerWin(`${state.playerMark}`)) {
+    console.log("Computer won");
   }
 };
 
-const checkIfWin = () => {
+const bindClickEvents = () => {
+  tiles.forEach((tile) => {
+    tile.addEventListener("click", handleTileClick);
+  });
+};
+const checkIfPlayerWin = (mark) => {
   return winMap.some((combination) => {
     return combination.every((id) => {
-      return tiles[id].classList.contains("X");
+      return tiles[id].classList.contains(mark);
     });
   });
 };
@@ -94,10 +142,8 @@ startBtn.addEventListener("click", handleClick);
 
 const init = () => {
   createBoard();
+  bindClickEvents();
+  playerPickMark();
 };
 
 init();
-
-tiles.forEach((tile) => {
-  tile.addEventListener("click", handleTileClick);
-});
