@@ -5,8 +5,27 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./style/index.css" />
-    <script href="./js/app.js" defer></script>
+    <script src="./js/app.js" defer></script>
     <title>Tic Tac Toe</title>
   </head>
-  <body></body>
+  <body>
+    <section class="starter-screen">
+      <img src="./images/logo.svg" alt="" class="logo" />
+      <div class="player-pick-container">
+        <h1 class="header">Pick your mark</h1>
+        <div class="marks-container">
+          <img src="./images/icons/icon-x-grey.svg" alt="" class="mark" />
+          <img src="./images/icons/icon-o-grey.svg" alt="" class="mark" />
+        </div>
+
+        <p class="paragraph">Remember: X goes first</p>
+      </div>
+
+      <button class="cta-btn">new game (vs cpu)</button>
+    </section>
+
+    <section class="game-screen">
+      <div class="board hidden"></div>
+    </section>
+  </body>
 </html>
