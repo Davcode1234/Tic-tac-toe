@@ -8,13 +8,14 @@ h1 {
 }
 
 .paragraph {
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   color: var(--color-grey);
   opacity: 0.5;
   text-transform: uppercase;
 }
 .starter-screen {
-  width: 40%;
+  width: 60%;
+  max-width: 93rem;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -26,10 +27,10 @@ h1 {
   position: relative;
   width: 50%;
   height: 20rem;
-  margin-top: 3rem;
+  margin-top: 4rem;
   background-color: var(--color-darkBlue);
   border-radius: 2rem;
-  box-shadow: 0 1rem 0 #10212a;
+  box-shadow: 0 0.8rem 0 #10212a;
   display: inherit;
   flex-direction: inherit;
   justify-content: space-evenly;
@@ -37,7 +38,7 @@ h1 {
 }
 
 .marks-container {
-  width: 80%;
+  width: 90%;
   height: 5rem;
   background-color: var(--color-black);
   display: inherit;
@@ -45,7 +46,7 @@ h1 {
   align-items: center;
   gap: 30%;
   padding: 4rem 0;
-  border-radius: 2rem;
+  border-radius: 1rem;
 }
 
 .mark {
@@ -77,4 +78,13 @@ h1 {
 
 .hidden {
   display: none;
+}
+
+.marks-choice {
+  position: absolute;
+  width: 45%;
+  height: 70%;
+  border-radius: 1rem;
+  background-color: var(--color-grey);
+  transform: translateX(-50%);
 }

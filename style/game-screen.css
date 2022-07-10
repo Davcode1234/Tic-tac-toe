@@ -28,3 +28,11 @@
 .active {
   display: visible;
 }
+
+.marks-container {
+  position: relative;
+}
+
+.mark {
+  cursor: pointer;
+}

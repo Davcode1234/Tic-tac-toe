@@ -16,8 +16,8 @@ let tiles = [];
 const boardSize = 9;
 
 let state = {
-  playerMark: null,
-  AIMark: null,
+  playerMark: "x",
+  AIMark: "o",
   playerScore: 0,
   AIScore: 0,
   draws: 0,
@@ -69,11 +69,15 @@ const startGame = () => {
   board.classList.add("active");
   console.log("Player", state.playerMark);
   console.log("AI", state.AIMark);
+  if (state.AIMark == "x") {
+    setTimeout(AIPick, 1000);
+  }
 };
 
 const handleClick = () => {
   startGame();
 };
+
 const handleMarkRender = (tile, mark, player = true) => {
   let tileClass = "";
   player
@@ -111,8 +115,8 @@ const AIPick = () => {
   } else {
     return;
   }
-  if (checkIfPlayerWin(`${state.AIMark}`)) {
-    console.log("Computer won");
+  if (checkWin(`${state.AIMark}`)) {
+    alert("Computer won");
   }
 };
 
@@ -121,8 +125,8 @@ const handleTileClick = (e) => {
   const tile = e.target;
   playerPick(tile);
   setTimeout(AIPick, 1000);
-  if (checkIfPlayerWin(`${state.playerMark}`)) {
-    console.log("Player won");
+  if (checkWin(`${state.playerMark}`)) {
+    alert("Player won");
   }
 };
 
@@ -131,7 +135,7 @@ const bindClickEvents = () => {
     tile.addEventListener("click", handleTileClick);
   });
 };
-const checkIfPlayerWin = (mark) => {
+const checkWin = (mark) => {
   return winMap.some((combination) => {
     return combination.every((id) => {
       return tiles[id].classList.contains(mark);
