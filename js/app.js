@@ -23,12 +23,32 @@ let state = {
   draws: 0,
 };
 
+const slideMarkChoiceContainer = () => {
+  const container = document.querySelector(".marks-choice");
+
+  const xBtn = document.querySelector(".x-btn");
+  const oBtn = document.querySelector(".o-btn");
+
+  if (container.classList.contains("x-mark")) {
+    container.classList.remove("x-mark");
+    container.classList.add("y-mark");
+    oBtn.src = "images/icons/icon-o-black.svg";
+    xBtn.src = "images/icons/icon-x-grey.svg";
+  } else {
+    container.classList.remove("y-mark");
+    container.classList.add("x-mark");
+    oBtn.src = "images/icons/icon-o-grey.svg";
+    xBtn.src = "images/icons/icon-x-black.svg";
+  }
+};
+
 const playerPickMark = () => {
   document.querySelectorAll(".mark").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       e.preventDefault();
       updatePlayerMark(e.target.dataset.mark);
       updateAIMark();
+      slideMarkChoiceContainer();
     });
   });
 };

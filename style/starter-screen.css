@@ -52,6 +52,7 @@ h1 {
 .mark {
   width: 31px;
   height: 31px;
+  z-index: 3;
 }
 
 .cta-btn {
@@ -86,5 +87,13 @@ h1 {
   height: 70%;
   border-radius: 1rem;
   background-color: var(--color-grey);
+  transition: all 0.3s ease-in-out;
+}
+
+.x-mark {
   transform: translateX(-50%);
+}
+
+.y-mark {
+  transform: translateX(50%);
 }
