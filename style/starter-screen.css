@@ -97,3 +97,22 @@ h1 {
 .y-mark {
   transform: translateX(50%);
 }
+
+.mark-wrapper {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+  width: 45%;
+  height: 70%;
+  background-color: transparent;
+}
+
+.mark-wrapper-o {
+  right: 5%;
+}
+
+.mark-wrapper-x {
+  left: 5%;
+}
