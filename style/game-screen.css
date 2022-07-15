@@ -19,6 +19,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: all 0.3s ease;
 }
 
 .hidden {
@@ -35,4 +36,9 @@
 
 .mark {
   cursor: pointer;
+}
+
+.full {
+  transform: translateY(3%);
+  box-shadow: inset 0 -5px 0 #10212a;
 }

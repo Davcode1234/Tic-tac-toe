@@ -150,9 +150,23 @@ const handleTileClick = (e) => {
   }
 };
 
+const handleTileHover = (e) => {
+  e.preventDefault();
+  const tile = e.target;
+  if (e.type === "mouseenter") {
+    tile.classList.add("dupa");
+  } else if (e.type === "mouseleave") {
+    tile.classList.remove("dupa");
+  }
+
+  console.log(e.type);
+};
+
 const bindClickEvents = () => {
   tiles.forEach((tile) => {
     tile.addEventListener("click", handleTileClick);
+    tile.addEventListener("mouseenter", handleTileHover);
+    tile.addEventListener("mouseleave", handleTileHover);
   });
 };
 const checkWin = (mark) => {
