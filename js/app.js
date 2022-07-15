@@ -98,6 +98,12 @@ const handleClick = () => {
   startGame();
 };
 
+const removePreviewMark = (tile) => {
+  if (tile.classList.contains(`preview-${state.playerMark}`)) {
+    tile.classList.remove(`preview-${state.playerMark}`);
+  }
+};
+
 const handleMarkRender = (tile, mark, player = true) => {
   let tileClass = "";
   player
@@ -108,11 +114,13 @@ const handleMarkRender = (tile, mark, player = true) => {
   tile.classList.add("full");
   tile.classList.add(tileClass);
   tile.removeEventListener("click", handleTileClick);
+  removePreviewMark(tile);
 };
 
 const playerPick = (tile) => {
   const mark = document.createElement("img");
   mark.src = `./images/icons/icon-${state.playerMark}.svg`;
+  removePreviewMark(tile);
   handleMarkRender(tile, mark);
 };
 
@@ -153,13 +161,13 @@ const handleTileClick = (e) => {
 const handleTileHover = (e) => {
   e.preventDefault();
   const tile = e.target;
-  if (e.type === "mouseenter") {
-    tile.classList.add("dupa");
+  if (tile.classList.contains("full")) {
+    return;
+  } else if (e.type === "mouseenter") {
+    tile.classList.add(`preview-${state.playerMark}`);
   } else if (e.type === "mouseleave") {
-    tile.classList.remove("dupa");
+    tile.classList.remove(`preview-${state.playerMark}`);
   }
-
-  console.log(e.type);
 };
 
 const bindClickEvents = () => {
