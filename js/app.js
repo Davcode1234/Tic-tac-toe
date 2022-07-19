@@ -18,9 +18,38 @@ const boardSize = 9;
 let state = {
   playerMark: "x",
   AIMark: "o",
+  currentTurn: "x",
   playerScore: 0,
   AIScore: 0,
   draws: 0,
+};
+
+const updateAIMark = () => {
+  if (state.playerMark == "x") {
+    state = {
+      ...state,
+      AIMark: "o",
+    };
+  } else {
+    state = {
+      ...state,
+      AIMark: "x",
+    };
+  }
+};
+
+const updatePlayerMark = (pickedOption) => {
+  state = {
+    ...state,
+    playerMark: pickedOption,
+  };
+};
+
+const updateCurrentTurn = (current) => {
+  state = {
+    ...state,
+    currentTurn: current,
+  };
 };
 
 const slideMarkChoiceContainer = () => {
@@ -53,30 +82,9 @@ const playerPickMark = () => {
   });
 };
 
-const updateAIMark = () => {
-  if (state.playerMark == "x") {
-    state = {
-      ...state,
-      AIMark: "o",
-    };
-  } else {
-    state = {
-      ...state,
-      AIMark: "x",
-    };
-  }
-};
-
-const updatePlayerMark = (pickedOption) => {
-  state = {
-    ...state,
-    playerMark: pickedOption,
-  };
-};
-
 const createBoard = () => {
   for (let i = 0; i < boardSize; i++) {
-    const tile = document.createElement("div");
+    const tile = document.createElement("button");
     tile.classList.add("tile", "empty");
     tiles.push(tile);
     board.appendChild(tile);
@@ -91,6 +99,7 @@ const startGame = () => {
   console.log("AI", state.AIMark);
   if (state.AIMark == "x") {
     setTimeout(AIPick, 1000);
+    disableBtn();
   }
 };
 
@@ -117,9 +126,19 @@ const handleMarkRender = (tile, mark, player = true) => {
   removePreviewMark(tile);
 };
 
+const disableBtn = () => {
+  tiles.forEach((tile) => {
+    tile.disabled = true;
+    setTimeout(() => {
+      tile.disabled = false;
+    }, 1500);
+  });
+};
+
 const playerPick = (tile) => {
   const mark = document.createElement("img");
   mark.src = `./images/icons/icon-${state.playerMark}.svg`;
+  disableBtn();
   removePreviewMark(tile);
   handleMarkRender(tile, mark);
 };

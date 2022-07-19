@@ -8,6 +8,7 @@
 }
 
 .tile {
+  border: none;
   cursor: pointer;
   max-height: 14rem;
   max-width: 14rem;
