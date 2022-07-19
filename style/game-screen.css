@@ -23,6 +23,31 @@
   transition: box-shadow, transform 0.3s ease;
 }
 
+.top-bar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.restart-btn {
+  background-color: var(--color-grey);
+  border-radius: 1rem;
+  box-shadow: inset 0 -4px 0 #6b8997;
+  cursor: pointer;
+  padding: 1.6em 1.6rem;
+  transition: all 0.2s ease;
+}
+
+.restart-btn:hover {
+  background-color: var(--color-white);
+}
+
+.restart-btn:focus {
+  background-color: red;
+  box-shadow: inset 0 -2px 0 #6b8997;
+}
+
 .hidden {
   display: none;
 }
