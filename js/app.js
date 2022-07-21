@@ -1,6 +1,7 @@
 const startBtn = document.querySelector(".cta-btn");
 const board = document.querySelector(".board");
 const startScreen = document.querySelector(".starter-screen");
+const topBar = document.querySelector(".top-bar");
 const winMap = [
   [0, 1, 2],
   [3, 4, 5],
@@ -18,7 +19,7 @@ const boardSize = 9;
 let state = {
   playerMark: "x",
   AIMark: "o",
-  currentTurn: "x",
+  Xturn: true,
   playerScore: 0,
   AIScore: 0,
   draws: 0,
@@ -45,11 +46,16 @@ const updatePlayerMark = (pickedOption) => {
   };
 };
 
-const updateCurrentTurn = (current) => {
-  state = {
-    ...state,
-    currentTurn: current,
-  };
+// const updateCurrentTurn = (current) => {
+//   state = {
+//     ...state,
+//     currentTurn: current,
+//   };
+// };
+
+const switchTurn = () => {
+  state.Xturn = !state.Xturn;
+  console.log(state.Xturn);
 };
 
 const slideMarkChoiceContainer = () => {
@@ -94,9 +100,9 @@ const createBoard = () => {
 const startGame = () => {
   startScreen.classList.add("hidden");
   board.classList.remove("hidden");
+  topBar.classList.remove("hidden");
   board.classList.add("active");
-  console.log("Player", state.playerMark);
-  console.log("AI", state.AIMark);
+  topBar.classList.add("active");
   if (state.AIMark == "x") {
     setTimeout(AIPick, 1000);
     disableBtn();
@@ -141,6 +147,8 @@ const playerPick = (tile) => {
   disableBtn();
   removePreviewMark(tile);
   handleMarkRender(tile, mark);
+  switchTurn();
+  renderCurrentTurnMark();
 };
 
 const AIPick = () => {
@@ -149,6 +157,8 @@ const AIPick = () => {
   const mark = document.createElement("img");
   mark.src = `./images/icons/icon-${state.AIMark}.svg`;
   const randomTile = tiles[randomIndex];
+  switchTurn();
+  renderCurrentTurnMark();
 
   if (randomTile.classList.contains("empty")) {
     handleMarkRender(randomTile, mark, (player = false));
@@ -164,6 +174,15 @@ const AIPick = () => {
   }
   if (checkWin(`${state.AIMark}`)) {
     alert("Computer won");
+  }
+};
+
+const renderCurrentTurnMark = () => {
+  const currentTurnMark = document.querySelector(".turn-mark");
+  if (state.Xturn) {
+    currentTurnMark.src = `images/icons/icon-x-grey.svg`;
+  } else {
+    currentTurnMark.src = `./images/icons/icon-o-grey.svg`;
   }
 };
 

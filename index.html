@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./style/index.css" />
+    <link rel="icon" type="image/x-icon" href="./images/favicon.ico" />
     <script src="./js/app.js" defer></script>
     <title>Tic Tac Toe</title>
   </head>
@@ -40,8 +41,16 @@
     </section>
 
     <section class="game-screen">
-      <div class="top-bar">
+      <div class="top-bar hidden">
         <img src="./images/logo.svg" alt="logo" class="logo" />
+        <div class="turn-container">
+          <img
+            src="./images/icons/icon-x-grey.svg"
+            alt="turn mark"
+            class="turn-mark"
+          />
+          <p>TURN</p>
+        </div>
         <img
           src="./images/icons/icon-restart.svg"
           alt="restart button"
