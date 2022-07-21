@@ -46,13 +46,6 @@ const updatePlayerMark = (pickedOption) => {
   };
 };
 
-// const updateCurrentTurn = (current) => {
-//   state = {
-//     ...state,
-//     currentTurn: current,
-//   };
-// };
-
 const switchTurn = () => {
   state.Xturn = !state.Xturn;
   console.log(state.Xturn);
@@ -60,7 +53,6 @@ const switchTurn = () => {
 
 const slideMarkChoiceContainer = () => {
   const container = document.querySelector(".marks-choice");
-
   const xBtn = document.querySelector(".x-btn");
   const oBtn = document.querySelector(".o-btn");
 
@@ -107,10 +99,6 @@ const startGame = () => {
     setTimeout(AIPick, 1000);
     disableBtn();
   }
-};
-
-const handleClick = () => {
-  startGame();
 };
 
 const removePreviewMark = (tile) => {
@@ -223,7 +211,7 @@ const checkWin = (mark) => {
   });
 };
 
-startBtn.addEventListener("click", handleClick);
+startBtn.addEventListener("click", startGame);
 
 const init = () => {
   createBoard();
