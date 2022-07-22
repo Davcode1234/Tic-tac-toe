@@ -2,6 +2,7 @@ const startBtn = document.querySelector(".cta-btn");
 const board = document.querySelector(".board");
 const startScreen = document.querySelector(".starter-screen");
 const topBar = document.querySelector(".top-bar");
+const oponentMessage = document.querySelector(".oponent-paragraph");
 const winMap = [
   [0, 1, 2],
   [3, 4, 5],
@@ -46,11 +47,32 @@ const updatePlayerMark = (pickedOption) => {
   };
 };
 
+const startGame = () => {
+  startScreen.classList.add("hidden");
+  board.classList.remove("hidden");
+  topBar.classList.remove("hidden");
+  board.classList.add("active");
+  topBar.classList.add("active");
+  if (state.AIMark == "x") {
+    showOponentMessage();
+    setTimeout(AIPick, 3000);
+    disableBtn();
+  }
+};
 const switchTurn = () => {
   state.Xturn = !state.Xturn;
-  console.log(state.Xturn);
 };
 
+const playerPickMark = () => {
+  document.querySelectorAll(".mark").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      updatePlayerMark(e.target.dataset.mark);
+      updateAIMark();
+      slideMarkChoiceContainer();
+    });
+  });
+};
 const slideMarkChoiceContainer = () => {
   const container = document.querySelector(".marks-choice");
   const xBtn = document.querySelector(".x-btn");
@@ -69,35 +91,12 @@ const slideMarkChoiceContainer = () => {
   }
 };
 
-const playerPickMark = () => {
-  document.querySelectorAll(".mark").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      updatePlayerMark(e.target.dataset.mark);
-      updateAIMark();
-      slideMarkChoiceContainer();
-    });
-  });
-};
-
 const createBoard = () => {
   for (let i = 0; i < boardSize; i++) {
     const tile = document.createElement("button");
     tile.classList.add("tile", "empty");
     tiles.push(tile);
     board.appendChild(tile);
-  }
-};
-
-const startGame = () => {
-  startScreen.classList.add("hidden");
-  board.classList.remove("hidden");
-  topBar.classList.remove("hidden");
-  board.classList.add("active");
-  topBar.classList.add("active");
-  if (state.AIMark == "x") {
-    setTimeout(AIPick, 1000);
-    disableBtn();
   }
 };
 
@@ -123,10 +122,16 @@ const handleMarkRender = (tile, mark, player = true) => {
 const disableBtn = () => {
   tiles.forEach((tile) => {
     tile.disabled = true;
+    tile.style.cursor = "default";
     setTimeout(() => {
       tile.disabled = false;
-    }, 1500);
+      tile.style.cursor = "pointer";
+    }, 3000);
   });
+};
+
+const showOponentMessage = () => {
+  oponentMessage.classList.remove("hidden");
 };
 
 const playerPick = (tile) => {
@@ -137,6 +142,7 @@ const playerPick = (tile) => {
   handleMarkRender(tile, mark);
   switchTurn();
   renderCurrentTurnMark();
+  showOponentMessage();
 };
 
 const AIPick = () => {
@@ -163,6 +169,8 @@ const AIPick = () => {
   if (checkWin(`${state.AIMark}`)) {
     alert("Computer won");
   }
+
+  oponentMessage.classList.add("hidden");
 };
 
 const renderCurrentTurnMark = () => {
@@ -178,7 +186,7 @@ const handleTileClick = (e) => {
   e.preventDefault();
   const tile = e.target;
   playerPick(tile);
-  setTimeout(AIPick, 1000);
+  setTimeout(AIPick, 3000);
   if (checkWin(`${state.playerMark}`)) {
     alert("Player won");
   }
