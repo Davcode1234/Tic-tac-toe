@@ -221,9 +221,12 @@ const checkWin = (mark) => {
 };
 restartBtn.addEventListener("click", () => {
   const restartModal = document.querySelector(".restart-modal");
+  const restartContent = document.querySelector(".modal-content");
   restartModal.classList.add("active-modal");
+  restartContent.classList.add("active-modal-content");
   restartModal.addEventListener("click", () => {
     restartModal.classList.remove("active-modal");
+    restartContent.classList.remove("active-modal-content");
   });
 });
 
