@@ -3,6 +3,7 @@ const board = document.querySelector(".board");
 const startScreen = document.querySelector(".starter-screen");
 const topBar = document.querySelector(".top-bar");
 const oponentMessage = document.querySelector(".oponent-paragraph");
+const restartBtn = document.querySelector(".restart-btn");
 const winMap = [
   [0, 1, 2],
   [3, 4, 5],
@@ -218,6 +219,13 @@ const checkWin = (mark) => {
     });
   });
 };
+restartBtn.addEventListener("click", () => {
+  const restartModal = document.querySelector(".restart-modal");
+  restartModal.classList.add("active-modal");
+  restartModal.addEventListener("click", () => {
+    restartModal.classList.remove("active-modal");
+  });
+});
 
 startBtn.addEventListener("click", startGame);
 
