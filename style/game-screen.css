@@ -190,3 +190,21 @@ body {
   letter-spacing: 1px;
   border-radius: 1rem;
 }
+
+.cancel-cta-btn {
+  background-color: var(--color-green);
+  box-shadow: inset 0 -4px 0 #6b8997;
+}
+
+.cancel-cta-btn:hover {
+  background-color: var(--color-blue);
+}
+
+.restart-cta-btn {
+  background-color: var(--color-orange);
+  box-shadow: inset 0 -4px 0 #cc8b13;
+}
+
+.restart-cta-btn:hover {
+  background-color: var(--color-lightOrange);
+}

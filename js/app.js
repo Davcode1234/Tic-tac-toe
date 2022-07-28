@@ -138,6 +138,7 @@ const showOponentMessage = () => {
 const playerPick = (tile) => {
   const mark = document.createElement("img");
   mark.src = `./images/icons/icon-${state.playerMark}.svg`;
+  mark.classList.add("markImage");
   disableBtn();
   removePreviewMark(tile);
   handleMarkRender(tile, mark);
@@ -151,6 +152,8 @@ const AIPick = () => {
   const randomIndex = Math.floor(Math.random() * emptySpaces.length);
   const mark = document.createElement("img");
   mark.src = `./images/icons/icon-${state.AIMark}.svg`;
+  mark.classList.add("markImage");
+
   const randomTile = tiles[randomIndex];
   switchTurn();
   renderCurrentTurnMark();
@@ -195,23 +198,58 @@ const handleTileClick = (e) => {
 
 const handleTileHover = (e) => {
   e.preventDefault();
-  const tile = e.target;
+  const tile = e.currentTarget;
   if (tile.classList.contains("full")) {
     return;
-  } else if (e.type === "mouseenter") {
+  } else if (e.type === "mouseover") {
     tile.classList.add(`preview-${state.playerMark}`);
   } else if (e.type === "mouseleave") {
     tile.classList.remove(`preview-${state.playerMark}`);
   }
 };
 
-const bindClickEvents = () => {
-  tiles.forEach((tile) => {
-    tile.addEventListener("click", handleTileClick);
-    tile.addEventListener("mouseenter", handleTileHover);
-    tile.addEventListener("mouseleave", handleTileHover);
+const handleModalOpen = () => {
+  const restartModal = document.querySelector(".restart-modal");
+  const restartContent = document.querySelector(".modal-content");
+  const btnWrapper = document.querySelectorAll(".btn-wrapper button");
+
+  restartModal.classList.add("active-modal");
+  restartContent.classList.add("active-modal-content");
+  restartModal.addEventListener("click", () => {
+    restartModal.classList.remove("active-modal");
+    restartContent.classList.remove("active-modal-content");
+  });
+
+  btnWrapper.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (e.target.dataset.modal === "restart") {
+        restartGame();
+        restartModal.classList.remove("active-modal");
+        restartContent.classList.remove("active-modal-content");
+      } else if (e.target.dataset.modal === "cancel") {
+        restartModal.classList.remove("active-modal");
+        restartContent.classList.remove("active-modal-content");
+      }
+    });
   });
 };
+
+function restartGame() {
+  tiles.forEach((tile) => {
+    tile.classList.remove("full");
+    tile.classList.add("empty");
+
+    tile.classList.contains("x")
+      ? tile.classList.remove("x")
+      : tile.classList.remove("o");
+    if (tile.hasChildNodes()) {
+      const mark = document.querySelector(".markImage");
+      tile.removeChild(mark);
+    }
+  });
+}
+
 const checkWin = (mark) => {
   return winMap.some((combination) => {
     return combination.every((id) => {
@@ -219,18 +257,15 @@ const checkWin = (mark) => {
     });
   });
 };
-restartBtn.addEventListener("click", () => {
-  const restartModal = document.querySelector(".restart-modal");
-  const restartContent = document.querySelector(".modal-content");
-  restartModal.classList.add("active-modal");
-  restartContent.classList.add("active-modal-content");
-  restartModal.addEventListener("click", () => {
-    restartModal.classList.remove("active-modal");
-    restartContent.classList.remove("active-modal-content");
+const bindClickEvents = () => {
+  tiles.forEach((tile) => {
+    tile.addEventListener("click", handleTileClick);
+    tile.addEventListener("mouseover", handleTileHover);
+    tile.addEventListener("mouseleave", handleTileHover);
   });
-});
-
-startBtn.addEventListener("click", startGame);
+  startBtn.addEventListener("click", startGame);
+  restartBtn.addEventListener("click", handleModalOpen);
+};
 
 const init = () => {
   createBoard();
