@@ -227,6 +227,11 @@ const handleModalOpen = () => {
         restartGame();
         restartModal.classList.remove("active-modal");
         restartContent.classList.remove("active-modal-content");
+        if (state.AIMark == "x") {
+          showOponentMessage();
+          setTimeout(AIPick, 3000);
+          disableBtn();
+        }
       } else if (e.target.dataset.modal === "cancel") {
         restartModal.classList.remove("active-modal");
         restartContent.classList.remove("active-modal-content");
@@ -248,6 +253,8 @@ function restartGame() {
       tile.removeChild(mark);
     }
   });
+
+  bindClickEvents();
 }
 
 const checkWin = (mark) => {
@@ -258,19 +265,19 @@ const checkWin = (mark) => {
   });
 };
 const bindClickEvents = () => {
+  startBtn.addEventListener("click", startGame);
+  restartBtn.addEventListener("click", handleModalOpen);
   tiles.forEach((tile) => {
     tile.addEventListener("click", handleTileClick);
     tile.addEventListener("mouseover", handleTileHover);
     tile.addEventListener("mouseleave", handleTileHover);
   });
-  startBtn.addEventListener("click", startGame);
-  restartBtn.addEventListener("click", handleModalOpen);
 };
 
-const init = () => {
+function init() {
   createBoard();
   bindClickEvents();
   playerPickMark();
-};
+}
 
 init();
