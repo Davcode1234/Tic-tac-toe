@@ -15,7 +15,8 @@ const winMap = [
   [2, 4, 6],
 ];
 
-let tiles = [];
+let tiles = [],
+  timeOutId;
 const boardSize = 9;
 
 let state = {
@@ -227,11 +228,6 @@ const handleModalOpen = () => {
         restartGame();
         restartModal.classList.remove("active-modal");
         restartContent.classList.remove("active-modal-content");
-        if (state.AIMark == "x") {
-          showOponentMessage();
-          setTimeout(AIPick, 3000);
-          disableBtn();
-        }
       } else if (e.target.dataset.modal === "cancel") {
         restartModal.classList.remove("active-modal");
         restartContent.classList.remove("active-modal-content");
@@ -255,8 +251,13 @@ function restartGame() {
   });
 
   bindClickEvents();
+  if (state.AIMark == "x") {
+    showOponentMessage();
+    clearTimeout(timeOutId);
+    timeOutId = setTimeout(AIPick, 3000);
+    disableBtn();
+  }
 }
-
 const checkWin = (mark) => {
   return winMap.some((combination) => {
     return combination.every((id) => {
