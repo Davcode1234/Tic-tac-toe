@@ -208,3 +208,7 @@ body {
 .restart-cta-btn:hover {
   background-color: var(--color-lightOrange);
 }
+
+.winningTiles {
+  background-color: #cc8b13;
+}

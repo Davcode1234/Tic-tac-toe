@@ -193,7 +193,7 @@ const handleTileClick = (e) => {
   playerPick(tile);
   setTimeout(AIPick, 3000);
   if (checkWin(`${state.playerMark}`)) {
-    alert("Player won");
+    checkWinningCombination(`${state.playerMark}`);
   }
 };
 
@@ -226,6 +226,7 @@ const handleModalOpen = () => {
       e.preventDefault();
       if (e.target.dataset.modal === "restart") {
         restartGame();
+
         restartModal.classList.remove("active-modal");
         restartContent.classList.remove("active-modal-content");
       } else if (e.target.dataset.modal === "cancel") {
@@ -249,15 +250,30 @@ function restartGame() {
       tile.removeChild(mark);
     }
   });
-
-  bindClickEvents();
   if (state.AIMark == "x") {
+    state.Xturn = true;
+    renderCurrentTurnMark();
     showOponentMessage();
     clearTimeout(timeOutId);
     timeOutId = setTimeout(AIPick, 3000);
     disableBtn();
   }
+  bindClickEvents();
 }
+
+const checkWinningCombination = (mark) => {
+  winMap.forEach((combination) => {
+    let check = combination.every((id) => {
+      return tiles[id].classList.contains(mark);
+    });
+
+    if (check) {
+      combination.forEach((winId) => {
+        tiles[winId].classList.add("winningTiles");
+      });
+    }
+  });
+};
 const checkWin = (mark) => {
   return winMap.some((combination) => {
     return combination.every((id) => {
@@ -275,10 +291,10 @@ const bindClickEvents = () => {
   });
 };
 
-function init() {
+const init = () => {
   createBoard();
   bindClickEvents();
   playerPickMark();
-}
+};
 
 init();
