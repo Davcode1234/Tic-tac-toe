@@ -28,7 +28,10 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: box-shadow, transform 0.3s ease;
+  transition-property: box-shadow, transform, background-color;
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
+  /* transition: box-shadow, background-color, transform 0.3s ease; */
 }
 
 .top-bar {
@@ -209,6 +212,10 @@ body {
   background-color: var(--color-lightOrange);
 }
 
-.winningTiles {
+.o-won {
   background-color: #cc8b13;
+}
+
+.x-won {
+  background-color: var(--color-green);
 }

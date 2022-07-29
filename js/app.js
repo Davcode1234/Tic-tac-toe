@@ -269,7 +269,13 @@ const checkWinningCombination = (mark) => {
 
     if (check) {
       combination.forEach((winId) => {
-        tiles[winId].classList.add("winningTiles");
+        if (tiles[winId].classList.contains("x")) {
+          let tile = tiles[winId];
+          let image = tile.firstChild;
+          tiles[winId].classList.add("x-won");
+          image.src = "images/icons/icon-x-black.svg";
+        } else if (tiles[winId].classList.contains("o"))
+          tiles[winId].classList.add("o-won");
       });
     }
   });
