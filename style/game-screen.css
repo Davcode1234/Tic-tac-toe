@@ -213,7 +213,7 @@ body {
 }
 
 .o-won {
-  background-color: #cc8b13;
+  background-color: var(--color-orange);
 }
 
 .x-won {

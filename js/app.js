@@ -172,7 +172,7 @@ const AIPick = () => {
     return;
   }
   if (checkWin(`${state.AIMark}`)) {
-    alert("Computer won");
+    checkWinningCombination(`${state.AIMark}`);
   }
 
   oponentMessage.classList.add("hidden");
@@ -269,13 +269,15 @@ const checkWinningCombination = (mark) => {
 
     if (check) {
       combination.forEach((winId) => {
-        if (tiles[winId].classList.contains("x")) {
-          let tile = tiles[winId];
-          let image = tile.firstChild;
-          tiles[winId].classList.add("x-won");
+        let tile = tiles[winId];
+        let image = tile.firstChild;
+        if (tile.classList.contains("x")) {
+          tile.classList.add("x-won");
           image.src = "images/icons/icon-x-black.svg";
-        } else if (tiles[winId].classList.contains("o"))
-          tiles[winId].classList.add("o-won");
+        } else if (tile.classList.contains("o")) {
+          tile.classList.add("o-won");
+          image.src = "images/icons/icon-o-black.svg";
+        }
       });
     }
   });
