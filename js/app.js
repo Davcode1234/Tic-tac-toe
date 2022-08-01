@@ -195,7 +195,6 @@ const handleTileClick = (e) => {
     highlightWinnerTiles(`${state.playerMark}`);
     clearTimeout(tileClickTimeout);
     oponentMessage.classList.add("hidden");
-    console.log("dupsko");
   }
 };
 
@@ -211,16 +210,37 @@ const handleTileHover = (e) => {
   }
 };
 
-const handleModalOpen = () => {
+const closeModal = (background, content) => {
+  background.classList.remove("active-modal");
+  content.classList.remove("active-modal-content");
+};
+
+const handleModalOpen = (restart = false, xWon = false, oWon = false) => {
   const restartModal = document.querySelector(".restart-modal");
   const restartContent = document.querySelector(".modal-content");
+  const paragraph = document.querySelector(".modal-content--paragraph");
+  const cancelBtn = document.querySelector(".cancel-cta-btn");
+  const restartBtn = document.querySelector(".restart-cta-btn");
   const btnWrapper = document.querySelectorAll(".btn-wrapper button");
 
+  const addTextContent = (paragraphText, firstBtn, secondBtn) => {
+    paragraph.textContent = paragraphText;
+    cancelBtn.textContent = firstBtn;
+    restartBtn.textContent = secondBtn;
+  };
+  if (restart) {
+    addTextContent("RESTART GAME", "NO, CANCEL", "YES, RESTART");
+  } else if (xWon) {
+    addTextContent("X TAKES THE ROUND", "QUIT", "NEXT ROUND");
+    paragraph.style.color = `#31c3bd`;
+  } else if (oWon) {
+    addTextContent("O TAKES THE ROUND", "QUIT", "NEXT ROUND");
+    paragraph.style.color = `#f2b137`;
+  }
   restartModal.classList.add("active-modal");
   restartContent.classList.add("active-modal-content");
   restartModal.addEventListener("click", () => {
-    restartModal.classList.remove("active-modal");
-    restartContent.classList.remove("active-modal-content");
+    closeModal(restartModal, restartContent);
   });
 
   btnWrapper.forEach((btn) => {
@@ -228,12 +248,9 @@ const handleModalOpen = () => {
       e.preventDefault();
       if (e.target.dataset.modal === "restart") {
         restartGame();
-
-        restartModal.classList.remove("active-modal");
-        restartContent.classList.remove("active-modal-content");
+        closeModal(restartModal, restartContent);
       } else if (e.target.dataset.modal === "cancel") {
-        restartModal.classList.remove("active-modal");
-        restartContent.classList.remove("active-modal-content");
+        closeModal(restartModal, restartContent);
       }
     });
   });
@@ -280,15 +297,15 @@ const highlightWinnerTiles = (mark) => {
         if (tile.classList.contains("x")) {
           tile.classList.add("x-won");
           image.src = "images/icons/icon-x-black.svg";
+          handleModalOpen((restart = false), (xWon = true), (oWon = false));
         } else if (tile.classList.contains("o")) {
           tile.classList.add("o-won");
           image.src = "images/icons/icon-o-black.svg";
+          handleModalOpen((restart = false), (xWon = false), (oWon = true));
         }
       });
     }
   });
-
-  handleModalOpen();
 };
 const checkWin = (mark) => {
   return winMap.some((combination) => {
@@ -299,7 +316,9 @@ const checkWin = (mark) => {
 };
 const bindClickEvents = () => {
   startBtn.addEventListener("click", startGame);
-  restartBtn.addEventListener("click", handleModalOpen);
+  restartBtn.addEventListener("click", () => {
+    handleModalOpen((restart = true), (xWon = false), (oWon = false));
+  });
   tiles.forEach((tile) => {
     tile.addEventListener("click", handleTileClick);
     tile.addEventListener("mouseover", handleTileHover);
