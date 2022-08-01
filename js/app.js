@@ -172,9 +172,8 @@ const AIPick = () => {
     return;
   }
   if (checkWin(`${state.AIMark}`)) {
-    checkWinningCombination(`${state.AIMark}`);
+    highlightWinnerTiles(`${state.AIMark}`);
   }
-
   oponentMessage.classList.add("hidden");
 };
 
@@ -191,9 +190,12 @@ const handleTileClick = (e) => {
   e.preventDefault();
   const tile = e.target;
   playerPick(tile);
-  setTimeout(AIPick, 3000);
+  tileClickTimeout = setTimeout(AIPick, 3000);
   if (checkWin(`${state.playerMark}`)) {
-    checkWinningCombination(`${state.playerMark}`);
+    highlightWinnerTiles(`${state.playerMark}`);
+    clearTimeout(tileClickTimeout);
+    oponentMessage.classList.add("hidden");
+    console.log("dupsko");
   }
 };
 
@@ -245,6 +247,10 @@ function restartGame() {
     tile.classList.contains("x")
       ? tile.classList.remove("x")
       : tile.classList.remove("o");
+
+    tile.classList.contains("x-won")
+      ? tile.classList.remove("x-won")
+      : tile.classList.remove("o-won");
     if (tile.hasChildNodes()) {
       const mark = document.querySelector(".markImage");
       tile.removeChild(mark);
@@ -261,7 +267,7 @@ function restartGame() {
   bindClickEvents();
 }
 
-const checkWinningCombination = (mark) => {
+const highlightWinnerTiles = (mark) => {
   winMap.forEach((combination) => {
     let check = combination.every((id) => {
       return tiles[id].classList.contains(mark);
@@ -281,6 +287,8 @@ const checkWinningCombination = (mark) => {
       });
     }
   });
+
+  handleModalOpen();
 };
 const checkWin = (mark) => {
   return winMap.some((combination) => {
