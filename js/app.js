@@ -222,6 +222,8 @@ const handleModalOpen = (restart = false, xWon = false, oWon = false) => {
   const cancelBtn = document.querySelector(".cancel-cta-btn");
   const restartBtn = document.querySelector(".restart-cta-btn");
   const btnWrapper = document.querySelectorAll(".btn-wrapper button");
+  const btnContent = ["QUIT", "NEXT ROUND"];
+  const [left, right] = btnContent;
 
   const addTextContent = (paragraphText, firstBtn, secondBtn) => {
     paragraph.textContent = paragraphText;
@@ -231,10 +233,10 @@ const handleModalOpen = (restart = false, xWon = false, oWon = false) => {
   if (restart) {
     addTextContent("RESTART GAME", "NO, CANCEL", "YES, RESTART");
   } else if (xWon) {
-    addTextContent("X TAKES THE ROUND", "QUIT", "NEXT ROUND");
+    addTextContent("X TAKES THE ROUND", `${left}`, `${right}`);
     paragraph.style.color = `#31c3bd`;
   } else if (oWon) {
-    addTextContent("O TAKES THE ROUND", "QUIT", "NEXT ROUND");
+    addTextContent("O TAKES THE ROUND", `${left}`, `${right}`);
     paragraph.style.color = `#f2b137`;
   }
   restartModal.classList.add("active-modal");
@@ -305,6 +307,9 @@ const highlightWinnerTiles = (mark) => {
         }
       });
     }
+  });
+  tiles.forEach((tile) => {
+    tile.removeEventListener("click", handleTileClick);
   });
 };
 const checkWin = (mark) => {
