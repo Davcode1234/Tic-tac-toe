@@ -256,6 +256,14 @@ const handleModalOpen = (restart = false, xWon = false, oWon = false) => {
       }
     });
   });
+
+  if (xWon && state.playerMark === "x") {
+    console.log("you won");
+  } else if (oWon && state.playerMark === "o") {
+    console.log("you won");
+  } else {
+    console.log("computer won");
+  }
 };
 
 function restartGame() {
@@ -310,6 +318,7 @@ const highlightWinnerTiles = (mark) => {
   });
   tiles.forEach((tile) => {
     tile.removeEventListener("click", handleTileClick);
+    tile.removeEventListener("mouseover", handleTileHover);
   });
 };
 const checkWin = (mark) => {
