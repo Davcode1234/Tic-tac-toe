@@ -283,9 +283,10 @@ function restartGame() {
       tile.removeChild(mark);
     }
   });
-  if (state.AIMark == "x") {
-    state.Xturn = true;
-    renderCurrentTurnMark();
+  state.Xturn = true;
+  console.log(state.Xturn);
+  renderCurrentTurnMark();
+  if (state.AIMark === "x") {
     showOponentMessage();
     clearTimeout(timeOutId);
     timeOutId = setTimeout(AIPick, 3000);
