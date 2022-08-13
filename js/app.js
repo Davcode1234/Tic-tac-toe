@@ -15,6 +15,8 @@ const winMap = [
   [2, 4, 6],
 ];
 
+const playerWinsLSKey = "playerWins";
+const AIWinsLSKey = "AIWins";
 let tiles = [],
   timeOutId;
 const boardSize = 9;
@@ -23,8 +25,8 @@ let state = {
   playerMark: "x",
   AIMark: "o",
   Xturn: true,
-  playerScore: 0,
-  AIScore: 0,
+  playerScore: Number(localStorage.getItem(playerWinsLSKey)) || 0,
+  AIScore: Number(localStorage.getItem(AIWinsLSKey)) || 0,
   draws: 0,
 };
 
@@ -173,8 +175,15 @@ const AIPick = () => {
   }
   if (checkWin(`${state.AIMark}`)) {
     highlightWinnerTiles(`${state.AIMark}`);
+    localStorage.setItem(AIWinsLSKey, state.AIScore + 1);
+
+    state = {
+      ...state,
+      AIScore: state.AIScore + 1,
+    };
   }
   oponentMessage.classList.add("hidden");
+  console.log(state.AIScore, state.playerScore);
 };
 
 const renderCurrentTurnMark = () => {
@@ -195,7 +204,13 @@ const handleTileClick = (e) => {
     highlightWinnerTiles(`${state.playerMark}`);
     clearTimeout(tileClickTimeout);
     oponentMessage.classList.add("hidden");
+    localStorage.setItem(playerWinsLSKey, state.playerScore + 1);
+    state = {
+      ...state,
+      playerScore: state.playerScore + 1,
+    };
   }
+  console.log(state.AIScore, state.playerScore);
 };
 
 const handleTileHover = (e) => {
@@ -257,13 +272,16 @@ const handleModalOpen = (restart = false, xWon = false, oWon = false) => {
     });
   });
 
-  if (xWon && state.playerMark === "x") {
-    console.log("you won");
-  } else if (oWon && state.playerMark === "o") {
-    console.log("you won");
-  } else {
-    console.log("computer won");
-  }
+  // if (xWon && state.playerMark === "x") {
+  //   console.log("you won");
+  //   updateScore((playerWon = true), (AIwon = false));
+  // } else if (oWon && state.playerMark === "o") {
+  //   console.log("you won");
+  //   updateScore((playerWon = true), (AIwon = false));
+  // } else {
+  //   console.log("computer won");
+  //   updateScore((playerWon = false), (AIwon = true));
+  // }
 };
 
 function restartGame() {
@@ -284,7 +302,6 @@ function restartGame() {
     }
   });
   state.Xturn = true;
-  console.log(state.Xturn);
   renderCurrentTurnMark();
   if (state.AIMark === "x") {
     showOponentMessage();
