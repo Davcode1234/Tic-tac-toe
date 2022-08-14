@@ -219,3 +219,17 @@ body {
 .x-won {
   background-color: var(--color-green);
 }
+
+.score-board {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  margin-bottom: 3rem;
+}
+
+.score-tile {
+  width: 13.5rem;
+  height: 7.2rem;
+  background-color: var(--color-green);
+  border-radius: 1.5rem;
+}
