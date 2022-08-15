@@ -4,6 +4,7 @@ const startScreen = document.querySelector(".starter-screen");
 const topBar = document.querySelector(".top-bar");
 const oponentMessage = document.querySelector(".oponent-paragraph");
 const restartBtn = document.querySelector(".restart-btn");
+const scoreBoard = document.querySelector(".score-board");
 const winMap = [
   [0, 1, 2],
   [3, 4, 5],
@@ -57,11 +58,14 @@ const startGame = () => {
   topBar.classList.remove("hidden");
   board.classList.add("active");
   topBar.classList.add("active");
+  scoreBoard.style.display = "flex";
   if (state.AIMark == "x") {
     showOponentMessage();
     setTimeout(AIPick, 3000);
     disableBtn();
   }
+
+  renderScore();
 };
 const switchTurn = () => {
   state.Xturn = !state.Xturn;
@@ -181,9 +185,9 @@ const AIPick = () => {
       ...state,
       AIScore: state.AIScore + 1,
     };
+    renderScore();
   }
   oponentMessage.classList.add("hidden");
-  console.log(state.AIScore, state.playerScore);
 };
 
 const renderCurrentTurnMark = () => {
@@ -209,8 +213,8 @@ const handleTileClick = (e) => {
       ...state,
       playerScore: state.playerScore + 1,
     };
+    renderScore();
   }
-  console.log(state.AIScore, state.playerScore);
 };
 
 const handleTileHover = (e) => {
@@ -271,17 +275,6 @@ const handleModalOpen = (restart = false, xWon = false, oWon = false) => {
       }
     });
   });
-
-  // if (xWon && state.playerMark === "x") {
-  //   console.log("you won");
-  //   updateScore((playerWon = true), (AIwon = false));
-  // } else if (oWon && state.playerMark === "o") {
-  //   console.log("you won");
-  //   updateScore((playerWon = true), (AIwon = false));
-  // } else {
-  //   console.log("computer won");
-  //   updateScore((playerWon = false), (AIwon = true));
-  // }
 };
 
 function restartGame() {
@@ -311,6 +304,29 @@ function restartGame() {
   }
   bindClickEvents();
 }
+
+const renderScore = () => {
+  const ties = document.querySelector(".ties-score");
+  const playerScore = document.querySelector(".player-score");
+  const AIScore = document.querySelector(".AI-score");
+  const paragraphs = document.querySelectorAll(".score-tile-paragraph");
+  const playerTile = document.querySelector(".player-tile");
+  const AITile = document.querySelector(".AI-tile");
+
+  playerScore.textContent = state.playerScore;
+  AIScore.textContent = state.AIScore;
+
+  if (state.playerMark === "x") {
+    paragraphs[0].textContent = "X (YOU)";
+    paragraphs[2].textContent = "O (CPU)";
+    AITile.style.backgroundColor = "var(--color-orange)";
+  } else if (state.playerMark === "o") {
+    paragraphs[0].textContent = "O (YOU)";
+    playerTile.style.backgroundColor = "var(--color-orange)";
+    paragraphs[2].textContent = "X (CPU)";
+    console.log("o");
+  }
+};
 
 const highlightWinnerTiles = (mark) => {
   winMap.forEach((combination) => {
