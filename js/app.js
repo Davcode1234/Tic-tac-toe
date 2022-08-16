@@ -214,6 +214,8 @@ const handleTileClick = (e) => {
       playerScore: state.playerScore + 1,
     };
     renderScore();
+  } else if (checkDraw()) {
+    console.log("draw");
   }
 };
 
@@ -281,6 +283,7 @@ function restartGame() {
   tiles.forEach((tile) => {
     tile.classList.remove("full");
     tile.classList.add("empty");
+    tile.style.cursor = "pointer";
 
     tile.classList.contains("x")
       ? tile.classList.remove("x")
@@ -294,6 +297,7 @@ function restartGame() {
       tile.removeChild(mark);
     }
   });
+  console.log("dupa");
   state.Xturn = true;
   renderCurrentTurnMark();
   if (state.AIMark === "x") {
@@ -328,6 +332,16 @@ const renderScore = () => {
   }
 };
 
+const disableTiles = () => {
+  tiles.forEach((tile) => {
+    tile.removeEventListener("click", handleTileClick);
+    tile.removeEventListener("mouseover", handleTileHover);
+    // setTimeout(() => {
+    //   tile.style.cursor = "default";
+    // }, 3010);
+  });
+};
+
 const highlightWinnerTiles = (mark) => {
   winMap.forEach((combination) => {
     let check = combination.every((id) => {
@@ -350,16 +364,19 @@ const highlightWinnerTiles = (mark) => {
       });
     }
   });
-  tiles.forEach((tile) => {
-    tile.removeEventListener("click", handleTileClick);
-    tile.removeEventListener("mouseover", handleTileHover);
-  });
+  disableTiles();
 };
 const checkWin = (mark) => {
   return winMap.some((combination) => {
     return combination.every((id) => {
       return tiles[id].classList.contains(mark);
     });
+  });
+};
+
+const checkDraw = () => {
+  return tiles.every((tile) => {
+    return tile.classList.contains("full");
   });
 };
 const bindClickEvents = () => {
