@@ -131,10 +131,13 @@ const disableBtn = () => {
   tiles.forEach((tile) => {
     tile.disabled = true;
     tile.style.cursor = "default";
-    setTimeout(() => {
-      tile.disabled = false;
-      tile.style.cursor = "pointer";
-    }, 3000);
+    console.log(checkWin("x"), checkDraw());
+    if (!checkWin("x") && !checkWin("o") && !checkDraw()) {
+      setTimeout(() => {
+        tile.disabled = false;
+        tile.style.cursor = "pointer";
+      }, 3000);
+    }
   });
 };
 
@@ -146,12 +149,12 @@ const playerPick = (tile) => {
   const mark = document.createElement("img");
   mark.src = `./images/icons/icon-${state.playerMark}.svg`;
   mark.classList.add("markImage");
-  disableBtn();
   removePreviewMark(tile);
   handleMarkRender(tile, mark);
   switchTurn();
   renderCurrentTurnMark();
   showOponentMessage();
+  disableBtn();
 };
 
 const AIPick = () => {
@@ -284,6 +287,7 @@ function restartGame() {
     tile.classList.remove("full");
     tile.classList.add("empty");
     tile.style.cursor = "pointer";
+    tile.disabled = false;
 
     tile.classList.contains("x")
       ? tile.classList.remove("x")
@@ -297,7 +301,6 @@ function restartGame() {
       tile.removeChild(mark);
     }
   });
-  console.log("dupa");
   state.Xturn = true;
   renderCurrentTurnMark();
   if (state.AIMark === "x") {
@@ -336,9 +339,8 @@ const disableTiles = () => {
   tiles.forEach((tile) => {
     tile.removeEventListener("click", handleTileClick);
     tile.removeEventListener("mouseover", handleTileHover);
-    // setTimeout(() => {
-    //   tile.style.cursor = "default";
-    // }, 3010);
+
+    tile.style.cursor = "default";
   });
 };
 
