@@ -18,6 +18,7 @@ const winMap = [
 
 const playerWinsLSKey = "playerWins";
 const AIWinsLSKey = "AIWins";
+const draws = "draws";
 let tiles = [],
   timeOutId;
 const boardSize = 9;
@@ -28,7 +29,7 @@ let state = {
   Xturn: true,
   playerScore: Number(localStorage.getItem(playerWinsLSKey)) || 0,
   AIScore: Number(localStorage.getItem(AIWinsLSKey)) || 0,
-  draws: 0,
+  draws: Number(localStorage.getItem(draws)) || 0,
 };
 
 const updateAIMark = () => {
@@ -189,6 +190,15 @@ const AIPick = () => {
       AIScore: state.AIScore + 1,
     };
     renderScore();
+  } else if (checkDraw()) {
+    clearTimeout(tileClickTimeout);
+    oponentMessage.classList.add("hidden");
+    localStorage.setItem(draws, state.draws + 1);
+    state = {
+      ...state,
+      draws: state.draws + 1,
+    };
+    renderScore();
   }
   oponentMessage.classList.add("hidden");
 };
@@ -218,7 +228,14 @@ const handleTileClick = (e) => {
     };
     renderScore();
   } else if (checkDraw()) {
-    console.log("draw");
+    clearTimeout(tileClickTimeout);
+    oponentMessage.classList.add("hidden");
+    localStorage.setItem(draws, state.draws + 1);
+    state = {
+      ...state,
+      draws: state.draws + 1,
+    };
+    renderScore();
   }
 };
 
@@ -322,6 +339,7 @@ const renderScore = () => {
 
   playerScore.textContent = state.playerScore;
   AIScore.textContent = state.AIScore;
+  ties.textContent = state.draws;
 
   if (state.playerMark === "x") {
     paragraphs[0].textContent = "X (YOU)";
