@@ -236,6 +236,12 @@ const handleTileClick = (e) => {
       draws: state.draws + 1,
     };
     renderScore();
+    handleModalOpen(
+      (restart = false),
+      (xWon = false),
+      (oWon = false),
+      (draw = true)
+    );
   }
 };
 
@@ -256,7 +262,12 @@ const closeModal = (background, content) => {
   content.classList.remove("active-modal-content");
 };
 
-const handleModalOpen = (restart = false, xWon = false, oWon = false) => {
+const handleModalOpen = (
+  restart = false,
+  xWon = false,
+  oWon = false,
+  draw = false
+) => {
   const restartModal = document.querySelector(".restart-modal");
   const restartContent = document.querySelector(".modal-content");
   const paragraph = document.querySelector(".modal-content--paragraph");
@@ -279,6 +290,8 @@ const handleModalOpen = (restart = false, xWon = false, oWon = false) => {
   } else if (oWon) {
     addTextContent("O TAKES THE ROUND", `${left}`, `${right}`);
     paragraph.style.color = `#f2b137`;
+  } else if (draw) {
+    addTextContent("DRAW", `${left}`, `${right}`);
   }
   restartModal.classList.add("active-modal");
   restartContent.classList.add("active-modal-content");
