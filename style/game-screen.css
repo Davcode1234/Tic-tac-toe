@@ -159,13 +159,20 @@ body {
   transition-delay: 0.1s;
 }
 
-.modal-content p {
-  font-size: 4rem;
-  font-weight: 700;
+.decision-paragraph,
+.winner-text-container p {
   color: var(--color-grey);
   letter-spacing: 2.5px;
-  margin-bottom: 2.3rem;
 }
+
+.decision-paragraph {
+  font-size: 2rem;
+}
+.winner-text-container p {
+  font-size: 4rem;
+  font-weight: 700;
+}
+
 .active-modal {
   z-index: 10;
   opacity: 0.5;
@@ -174,6 +181,14 @@ body {
 .active-modal-content {
   transform: translateY(0);
   opacity: 1;
+}
+
+.winner-text-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 2.3rem;
 }
 
 .btn-wrapper {
