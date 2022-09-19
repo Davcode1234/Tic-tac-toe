@@ -18,10 +18,11 @@ const winMap = [
 
 const playerWinsLSKey = "playerWins";
 const AIWinsLSKey = "AIWins";
-const draws = "draws";
+const drawsLSKey = "draws";
 let tiles = [],
   timeOutId;
 const boardSize = 9;
+let AIPicking = false;
 
 let state = {
   playerMark: "x",
@@ -29,7 +30,7 @@ let state = {
   Xturn: true,
   playerScore: Number(localStorage.getItem(playerWinsLSKey)) || 0,
   AIScore: Number(localStorage.getItem(AIWinsLSKey)) || 0,
-  draws: Number(localStorage.getItem(draws)) || 0,
+  draws: Number(localStorage.getItem(drawsLSKey)) || 0,
 };
 
 const updateAIMark = () => {
@@ -68,6 +69,46 @@ const startGame = () => {
 
   renderScore();
 };
+
+function restartGame() {
+  tiles.forEach((tile) => {
+    tile.classList.remove("full");
+    tile.classList.add("empty");
+    tile.style.cursor = "pointer";
+    tile.disabled = false;
+
+    tile.classList.contains("x")
+      ? tile.classList.remove("x")
+      : tile.classList.remove("o");
+
+    tile.classList.contains("x-won")
+      ? tile.classList.remove("x-won")
+      : tile.classList.remove("o-won");
+    if (tile.hasChildNodes()) {
+      const mark = document.querySelector(".markImage");
+      tile.removeChild(mark);
+    }
+  });
+  state.Xturn = true;
+  renderCurrentTurnMark();
+  if (state.AIMark === "x") {
+    showOponentMessage();
+    clearTimeout(timeOutId);
+    timeOutId = setTimeout(AIPick, 3000);
+    disableBtn();
+  }
+  bindClickEvents();
+}
+
+const quitGame = () => {
+  startScreen.classList.remove("hidden");
+  board.classList.add("hidden");
+  topBar.classList.add("hidden");
+  board.classList.remove("active");
+  topBar.classList.remove("active");
+  scoreBoard.style.display = "none";
+};
+
 const switchTurn = () => {
   state.Xturn = !state.Xturn;
 };
@@ -124,17 +165,18 @@ const handleMarkRender = (tile, mark, player = true) => {
   tile.classList.remove("empty");
   tile.classList.add("full");
   tile.classList.add(tileClass);
-  tile.removeEventListener("click", handleTileClick);
+  // tile.removeEventListener("click", handleTileClick);
   removePreviewMark(tile);
 };
 
 const disableBtn = () => {
   tiles.forEach((tile) => {
-    tile.disabled = true;
+    // tile.disabled = true;
+    AIPicking = true;
     tile.style.cursor = "default";
-    console.log(checkWin("x"), checkDraw());
     if (!checkWin("x") && !checkWin("o") && !checkDraw()) {
       setTimeout(() => {
+        AIPicking = false;
         tile.disabled = false;
         tile.style.cursor = "pointer";
       }, 3000);
@@ -191,14 +233,7 @@ const AIPick = () => {
     };
     renderScore();
   } else if (checkDraw()) {
-    clearTimeout(tileClickTimeout);
-    oponentMessage.classList.add("hidden");
-    localStorage.setItem(draws, state.draws + 1);
-    state = {
-      ...state,
-      draws: state.draws + 1,
-    };
-    renderScore();
+    renderDrawScreen();
   }
   oponentMessage.classList.add("hidden");
 };
@@ -228,32 +263,41 @@ const handleTileClick = (e) => {
     };
     renderScore();
   } else if (checkDraw()) {
-    clearTimeout(tileClickTimeout);
-    oponentMessage.classList.add("hidden");
-    localStorage.setItem(draws, state.draws + 1);
-    state = {
-      ...state,
-      draws: state.draws + 1,
-    };
-    renderScore();
-    handleModalOpen(
-      (restart = false),
-      (xWon = false),
-      (oWon = false),
-      (draw = true)
-    );
+    renderDrawScreen();
   }
 };
+
+const renderDrawScreen = () => {
+  clearTimeout(tileClickTimeout);
+  oponentMessage.classList.add("hidden");
+  localStorage.setItem(drawsLSKey, state.draws + 1);
+  state = {
+    ...state,
+    draws: state.draws + 1,
+  };
+  renderScore();
+  handleModalOpen(
+    (restart = false),
+    (xWon = false),
+    (oWon = false),
+    (draw = true)
+  );
+};
+
+// Spróbować może coś z index (żeby klasa preview na tile.disabled = false się dodała, ale żeby mark nie był widoczny na AIPicking = true )
 
 const handleTileHover = (e) => {
   e.preventDefault();
   const tile = e.currentTarget;
+
   if (tile.classList.contains("full")) {
     return;
   } else if (e.type === "mouseover") {
     tile.classList.add(`preview-${state.playerMark}`);
   } else if (e.type === "mouseleave") {
     tile.classList.remove(`preview-${state.playerMark}`);
+  } else if (e.type === "mousemove") {
+    tile.classList.add(`preview-${state.playerMark}`);
   }
 };
 
@@ -328,42 +372,22 @@ const handleModalOpen = (
       if (e.target.dataset.modal === "restart") {
         restartGame();
         closeModal(restartModal, restartContent);
-      } else if (e.target.dataset.modal === "cancel") {
+      } else if (
+        e.target.dataset.modal === "cancel" &&
+        btn.textContent === "QUIT"
+      ) {
+        closeModal(restartModal, restartContent);
+        quitGame();
+        restartGame();
+      } else if (
+        e.target.dataset.modal === "cancel" &&
+        btn.textContent === "NO, CANCEL"
+      ) {
         closeModal(restartModal, restartContent);
       }
     });
   });
 };
-
-function restartGame() {
-  tiles.forEach((tile) => {
-    tile.classList.remove("full");
-    tile.classList.add("empty");
-    tile.style.cursor = "pointer";
-    tile.disabled = false;
-
-    tile.classList.contains("x")
-      ? tile.classList.remove("x")
-      : tile.classList.remove("o");
-
-    tile.classList.contains("x-won")
-      ? tile.classList.remove("x-won")
-      : tile.classList.remove("o-won");
-    if (tile.hasChildNodes()) {
-      const mark = document.querySelector(".markImage");
-      tile.removeChild(mark);
-    }
-  });
-  state.Xturn = true;
-  renderCurrentTurnMark();
-  if (state.AIMark === "x") {
-    showOponentMessage();
-    clearTimeout(timeOutId);
-    timeOutId = setTimeout(AIPick, 3000);
-    disableBtn();
-  }
-  bindClickEvents();
-}
 
 const renderScore = () => {
   const ties = document.querySelector(".ties-score");
@@ -385,7 +409,6 @@ const renderScore = () => {
     paragraphs[0].textContent = "O (YOU)";
     playerTile.style.backgroundColor = "var(--color-orange)";
     paragraphs[2].textContent = "X (CPU)";
-    console.log("o");
   }
 };
 
@@ -393,7 +416,6 @@ const disableTiles = () => {
   tiles.forEach((tile) => {
     tile.removeEventListener("click", handleTileClick);
     tile.removeEventListener("mouseover", handleTileHover);
-
     tile.style.cursor = "default";
   });
 };
@@ -435,15 +457,22 @@ const checkDraw = () => {
     return tile.classList.contains("full");
   });
 };
+
 const bindClickEvents = () => {
   startBtn.addEventListener("click", startGame);
   restartBtn.addEventListener("click", () => {
-    handleModalOpen((restart = true), (xWon = false), (oWon = false));
+    handleModalOpen(
+      (restart = true),
+      (xWon = false),
+      (oWon = false),
+      (draw = false)
+    );
   });
   tiles.forEach((tile) => {
     tile.addEventListener("click", handleTileClick);
     tile.addEventListener("mouseover", handleTileHover);
     tile.addEventListener("mouseleave", handleTileHover);
+    // tile.addEventListener("mousemove", handleTileHover);
   });
 };
 
