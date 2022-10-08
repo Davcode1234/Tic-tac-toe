@@ -66,11 +66,25 @@ const startGame = () => {
     setTimeout(AIPick, 3000);
     disableBtn();
   }
+  state = {
+    ...state,
+    Xturn: true,
+  };
+
+  renderCurrentTurnMark();
 
   renderScore();
 };
+const createBoard = () => {
+  for (let i = 0; i < boardSize; i++) {
+    const tile = document.createElement("button");
+    tile.classList.add("tile", "empty");
+    tiles.push(tile);
+    board.appendChild(tile);
+  }
+};
 
-function restartGame() {
+function clearBoard() {
   tiles.forEach((tile) => {
     tile.classList.remove("full");
     tile.classList.add("empty");
@@ -89,14 +103,22 @@ function restartGame() {
       tile.removeChild(mark);
     }
   });
+}
+
+function restartGame() {
+  clearBoard();
   state.Xturn = true;
   renderCurrentTurnMark();
+  AIPicking = false;
   if (state.AIMark === "x") {
     showOponentMessage();
     clearTimeout(timeOutId);
     timeOutId = setTimeout(AIPick, 3000);
     disableBtn();
+    AIPicking = true;
+    disableMarkPreview(0);
   }
+  disableMarkPreview(50);
   bindClickEvents();
 }
 
@@ -107,6 +129,10 @@ const quitGame = () => {
   board.classList.remove("active");
   topBar.classList.remove("active");
   scoreBoard.style.display = "none";
+  clearBoard();
+  if (state.playerMark === "x") {
+    disableMarkPreview(50);
+  }
 };
 
 const switchTurn = () => {
@@ -141,15 +167,6 @@ const slideMarkChoiceContainer = () => {
   }
 };
 
-const createBoard = () => {
-  for (let i = 0; i < boardSize; i++) {
-    const tile = document.createElement("button");
-    tile.classList.add("tile", "empty");
-    tiles.push(tile);
-    board.appendChild(tile);
-  }
-};
-
 const removePreviewMark = (tile) => {
   if (tile.classList.contains(`preview-${state.playerMark}`)) {
     tile.classList.remove(`preview-${state.playerMark}`);
@@ -165,7 +182,7 @@ const handleMarkRender = (tile, mark, player = true) => {
   tile.classList.remove("empty");
   tile.classList.add("full");
   tile.classList.add(tileClass);
-  // tile.removeEventListener("click", handleTileClick);
+  tile.removeEventListener("click", handleTileClick);
   removePreviewMark(tile);
 };
 
@@ -173,11 +190,12 @@ const disableBtn = () => {
   tiles.forEach((tile) => {
     // tile.disabled = true;
     AIPicking = true;
+
     tile.style.cursor = "default";
     if (!checkWin("x") && !checkWin("o") && !checkDraw()) {
       setTimeout(() => {
         AIPicking = false;
-        tile.disabled = false;
+        // tile.disabled = false;
         tile.style.cursor = "pointer";
       }, 3000);
     }
@@ -187,6 +205,12 @@ const disableBtn = () => {
 const showOponentMessage = () => {
   oponentMessage.classList.remove("hidden");
 };
+
+function disableMarkPreview(size) {
+  tiles.forEach((tile) => {
+    tile.style.backgroundSize = `${size}%`;
+  });
+}
 
 const playerPick = (tile) => {
   const mark = document.createElement("img");
@@ -198,6 +222,7 @@ const playerPick = (tile) => {
   renderCurrentTurnMark();
   showOponentMessage();
   disableBtn();
+  disableMarkPreview(0);
 };
 
 const AIPick = () => {
@@ -236,6 +261,8 @@ const AIPick = () => {
     renderDrawScreen();
   }
   oponentMessage.classList.add("hidden");
+
+  disableMarkPreview(50);
 };
 
 const renderCurrentTurnMark = () => {
@@ -247,7 +274,33 @@ const renderCurrentTurnMark = () => {
   }
 };
 
+const handleTileHover = (e) => {
+  // e.preventDefault();
+  const tile = e.currentTarget;
+
+  // tiles.forEach((tile) => {
+  //   if (AIPicking) {
+  //     tile.style.backgroundSize = "0%";
+  //   } else if (!AIPicking) {
+  //     tile.style.backgroundSize = "50%";
+  //   }
+  // });
+
+  if (tile.classList.contains("full")) {
+    return;
+  } else if (e.type === "mouseenter") {
+    tile.classList.add(`preview-${state.playerMark}`);
+  } else if (e.type === "mouseleave") {
+    tile.classList.remove(`preview-${state.playerMark}`);
+  } else if (e.type === "mousemove") {
+    tile.classList.add(`preview-${state.playerMark}`);
+  }
+};
+
 const handleTileClick = (e) => {
+  if (AIPicking) {
+    return;
+  }
   e.preventDefault();
   const tile = e.target;
   playerPick(tile);
@@ -282,23 +335,6 @@ const renderDrawScreen = () => {
     (oWon = false),
     (draw = true)
   );
-};
-
-// Spróbować może coś z index (żeby klasa preview na tile.disabled = false się dodała, ale żeby mark nie był widoczny na AIPicking = true )
-
-const handleTileHover = (e) => {
-  e.preventDefault();
-  const tile = e.currentTarget;
-
-  if (tile.classList.contains("full")) {
-    return;
-  } else if (e.type === "mouseover") {
-    tile.classList.add(`preview-${state.playerMark}`);
-  } else if (e.type === "mouseleave") {
-    tile.classList.remove(`preview-${state.playerMark}`);
-  } else if (e.type === "mousemove") {
-    tile.classList.add(`preview-${state.playerMark}`);
-  }
 };
 
 const closeModal = (background, content) => {
@@ -378,7 +414,7 @@ const handleModalOpen = (
       ) {
         closeModal(restartModal, restartContent);
         quitGame();
-        restartGame();
+        // restartGame();
       } else if (
         e.target.dataset.modal === "cancel" &&
         btn.textContent === "NO, CANCEL"
@@ -412,14 +448,6 @@ const renderScore = () => {
   }
 };
 
-const disableTiles = () => {
-  tiles.forEach((tile) => {
-    tile.removeEventListener("click", handleTileClick);
-    tile.removeEventListener("mouseover", handleTileHover);
-    tile.style.cursor = "default";
-  });
-};
-
 const highlightWinnerTiles = (mark) => {
   winMap.forEach((combination) => {
     let check = combination.every((id) => {
@@ -442,7 +470,6 @@ const highlightWinnerTiles = (mark) => {
       });
     }
   });
-  disableTiles();
 };
 const checkWin = (mark) => {
   return winMap.some((combination) => {
@@ -470,7 +497,7 @@ const bindClickEvents = () => {
   });
   tiles.forEach((tile) => {
     tile.addEventListener("click", handleTileClick);
-    tile.addEventListener("mouseover", handleTileHover);
+    tile.addEventListener("mouseenter", handleTileHover);
     tile.addEventListener("mouseleave", handleTileHover);
     // tile.addEventListener("mousemove", handleTileHover);
   });
