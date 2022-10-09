@@ -72,8 +72,8 @@ const startGame = () => {
   };
 
   renderCurrentTurnMark();
-
   renderScore();
+  // bindEventsToTiles();
 };
 const createBoard = () => {
   for (let i = 0; i < boardSize; i++) {
@@ -106,6 +106,9 @@ function clearBoard() {
 }
 
 function restartGame() {
+  if (AIPicking) {
+    return;
+  }
   clearBoard();
   state.Xturn = true;
   renderCurrentTurnMark();
@@ -119,20 +122,21 @@ function restartGame() {
     disableMarkPreview(0);
   }
   disableMarkPreview(50);
-  bindClickEvents();
+  bindEventsToTiles();
 }
 
 const quitGame = () => {
+  // clearBoard();
   startScreen.classList.remove("hidden");
   board.classList.add("hidden");
   topBar.classList.add("hidden");
   board.classList.remove("active");
   topBar.classList.remove("active");
   scoreBoard.style.display = "none";
-  clearBoard();
   if (state.playerMark === "x") {
     disableMarkPreview(50);
   }
+  bindEventsToTiles();
 };
 
 const switchTurn = () => {
@@ -275,16 +279,8 @@ const renderCurrentTurnMark = () => {
 };
 
 const handleTileHover = (e) => {
-  // e.preventDefault();
+  e.preventDefault();
   const tile = e.currentTarget;
-
-  // tiles.forEach((tile) => {
-  //   if (AIPicking) {
-  //     tile.style.backgroundSize = "0%";
-  //   } else if (!AIPicking) {
-  //     tile.style.backgroundSize = "50%";
-  //   }
-  // });
 
   if (tile.classList.contains("full")) {
     return;
@@ -414,7 +410,7 @@ const handleModalOpen = (
       ) {
         closeModal(restartModal, restartContent);
         quitGame();
-        // restartGame();
+        restartGame();
       } else if (
         e.target.dataset.modal === "cancel" &&
         btn.textContent === "NO, CANCEL"
@@ -485,6 +481,15 @@ const checkDraw = () => {
   });
 };
 
+function bindEventsToTiles() {
+  tiles.forEach((tile) => {
+    tile.addEventListener("click", handleTileClick);
+    tile.addEventListener("mouseenter", handleTileHover);
+    tile.addEventListener("mouseleave", handleTileHover);
+    // tile.addEventListener("mousemove", handleTileHover);
+  });
+}
+
 const bindClickEvents = () => {
   startBtn.addEventListener("click", startGame);
   restartBtn.addEventListener("click", () => {
@@ -495,12 +500,8 @@ const bindClickEvents = () => {
       (draw = false)
     );
   });
-  tiles.forEach((tile) => {
-    tile.addEventListener("click", handleTileClick);
-    tile.addEventListener("mouseenter", handleTileHover);
-    tile.addEventListener("mouseleave", handleTileHover);
-    // tile.addEventListener("mousemove", handleTileHover);
-  });
+
+  bindEventsToTiles();
 };
 
 const init = () => {
