@@ -65,6 +65,9 @@ const startGame = () => {
     showOponentMessage();
     setTimeout(AIPick, 3000);
     disableBtn();
+    disableMarkPreview();
+  } else {
+    disableMarkPreview((XStart = true));
   }
   state = {
     ...state,
@@ -73,7 +76,6 @@ const startGame = () => {
 
   renderCurrentTurnMark();
   renderScore();
-  // bindEventsToTiles();
 };
 const createBoard = () => {
   for (let i = 0; i < boardSize; i++) {
@@ -106,9 +108,6 @@ function clearBoard() {
 }
 
 function restartGame() {
-  if (AIPicking) {
-    return;
-  }
   clearBoard();
   state.Xturn = true;
   renderCurrentTurnMark();
@@ -119,14 +118,14 @@ function restartGame() {
     timeOutId = setTimeout(AIPick, 3000);
     disableBtn();
     AIPicking = true;
-    disableMarkPreview(0);
+    disableMarkPreview();
+  } else {
+    disableMarkPreview((XStart = true));
   }
-  disableMarkPreview(50);
   bindEventsToTiles();
 }
 
 const quitGame = () => {
-  // clearBoard();
   startScreen.classList.remove("hidden");
   board.classList.add("hidden");
   topBar.classList.add("hidden");
@@ -134,7 +133,7 @@ const quitGame = () => {
   topBar.classList.remove("active");
   scoreBoard.style.display = "none";
   if (state.playerMark === "x") {
-    disableMarkPreview(50);
+    // disableMarkPreview(50);
   }
   bindEventsToTiles();
 };
@@ -210,10 +209,27 @@ const showOponentMessage = () => {
   oponentMessage.classList.remove("hidden");
 };
 
-function disableMarkPreview(size) {
-  tiles.forEach((tile) => {
-    tile.style.backgroundSize = `${size}%`;
-  });
+// function disableMarkPreview(size) {
+//   tiles.forEach((tile) => {
+//     tile.style.backgroundSize = `${size}%`;
+//   });
+// }
+
+function disableMarkPreview(XStart = false) {
+  const setTilesBckgroundSize = (size) => {
+    tiles.forEach((tile) => {
+      tile.style.backgroundSize = `${size}%`;
+    });
+  };
+  if (!XStart) {
+    setTilesBckgroundSize(0);
+    setTimeout(() => {
+      setTilesBckgroundSize(50);
+      console.log("asfafafs");
+    }, 3000);
+  } else {
+    setTilesBckgroundSize(50);
+  }
 }
 
 const playerPick = (tile) => {
@@ -226,7 +242,7 @@ const playerPick = (tile) => {
   renderCurrentTurnMark();
   showOponentMessage();
   disableBtn();
-  disableMarkPreview(0);
+  disableMarkPreview();
 };
 
 const AIPick = () => {
@@ -266,7 +282,7 @@ const AIPick = () => {
   }
   oponentMessage.classList.add("hidden");
 
-  disableMarkPreview(50);
+  // disableMarkPreview(50);
 };
 
 const renderCurrentTurnMark = () => {
