@@ -107,12 +107,12 @@ function clearBoard() {
   });
 }
 
-function restartGame() {
+function restartGame(quit = false) {
   clearBoard();
   state.Xturn = true;
   renderCurrentTurnMark();
   AIPicking = false;
-  if (state.AIMark === "x") {
+  if (state.AIMark === "x" && !quit) {
     showOponentMessage();
     clearTimeout(timeOutId);
     timeOutId = setTimeout(AIPick, 3000);
@@ -132,10 +132,6 @@ const quitGame = () => {
   board.classList.remove("active");
   topBar.classList.remove("active");
   scoreBoard.style.display = "none";
-  if (state.playerMark === "x") {
-    // disableMarkPreview(50);
-  }
-  bindEventsToTiles();
 };
 
 const switchTurn = () => {
@@ -191,14 +187,12 @@ const handleMarkRender = (tile, mark, player = true) => {
 
 const disableBtn = () => {
   tiles.forEach((tile) => {
-    // tile.disabled = true;
     AIPicking = true;
 
     tile.style.cursor = "default";
     if (!checkWin("x") && !checkWin("o") && !checkDraw()) {
       setTimeout(() => {
         AIPicking = false;
-        // tile.disabled = false;
         tile.style.cursor = "pointer";
       }, 3000);
     }
@@ -208,12 +202,6 @@ const disableBtn = () => {
 const showOponentMessage = () => {
   oponentMessage.classList.remove("hidden");
 };
-
-// function disableMarkPreview(size) {
-//   tiles.forEach((tile) => {
-//     tile.style.backgroundSize = `${size}%`;
-//   });
-// }
 
 function disableMarkPreview(XStart = false) {
   const setTilesBckgroundSize = (size) => {
@@ -225,7 +213,6 @@ function disableMarkPreview(XStart = false) {
     setTilesBckgroundSize(0);
     setTimeout(() => {
       setTilesBckgroundSize(50);
-      console.log("asfafafs");
     }, 3000);
   } else {
     setTilesBckgroundSize(50);
@@ -281,8 +268,6 @@ const AIPick = () => {
     renderDrawScreen();
   }
   oponentMessage.classList.add("hidden");
-
-  // disableMarkPreview(50);
 };
 
 const renderCurrentTurnMark = () => {
@@ -418,15 +403,15 @@ const handleModalOpen = (
     btn.addEventListener("click", (e) => {
       e.preventDefault();
       if (e.target.dataset.modal === "restart") {
-        restartGame();
         closeModal(restartModal, restartContent);
+        restartGame((quit = false));
       } else if (
         e.target.dataset.modal === "cancel" &&
         btn.textContent === "QUIT"
       ) {
         closeModal(restartModal, restartContent);
         quitGame();
-        restartGame();
+        restartGame((quit = true));
       } else if (
         e.target.dataset.modal === "cancel" &&
         btn.textContent === "NO, CANCEL"
@@ -502,7 +487,6 @@ function bindEventsToTiles() {
     tile.addEventListener("click", handleTileClick);
     tile.addEventListener("mouseenter", handleTileHover);
     tile.addEventListener("mouseleave", handleTileHover);
-    // tile.addEventListener("mousemove", handleTileHover);
   });
 }
 
