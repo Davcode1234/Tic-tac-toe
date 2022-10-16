@@ -21,6 +21,7 @@ h1 {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  transition: all 1s ease;
 }
 
 .player-pick-container {
@@ -115,4 +116,8 @@ h1 {
 
 .mark-wrapper-x {
   left: 5%;
+}
+
+.slide-out {
+  transform: translateX(-200%);
 }

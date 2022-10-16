@@ -3,7 +3,10 @@ body {
 }
 
 .game-screen {
-  position: relative;
+  position: absolute;
+  margin: 0 auto;
+  transform: translateX(300%);
+  transition: all 1s ease;
 }
 
 .board {
@@ -269,4 +272,11 @@ b {
   font-weight: 700;
   color: var(--color-darkBlue);
   font-family: outfit;
+}
+
+.slide-in {
+  /* display: visible;
+  position: relative;
+  /* right: 30%; */
+  transform: translateX(0);
 }
