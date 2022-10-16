@@ -1,6 +1,7 @@
 const startBtn = document.querySelector(".cta-btn");
 const board = document.querySelector(".board");
 const startScreen = document.querySelector(".starter-screen");
+const gameScreen = document.querySelector(".game-screen");
 const topBar = document.querySelector(".top-bar");
 const oponentMessage = document.querySelector(".oponent-paragraph");
 const restartBtn = document.querySelector(".restart-btn");
@@ -55,11 +56,25 @@ const updatePlayerMark = (pickedOption) => {
 };
 
 const startGame = () => {
-  startScreen.classList.add("hidden");
+  const setClassesToStartScreen = (classs) => {
+    startScreen.classList.add(classs);
+  };
+
+  const setClassesToGameScreen = (classs) => {
+    // board.classList.add(classs);
+    // topBar.classList.add(classs);
+    gameScreen.classList.add(classs);
+  };
+
+  setClassesToStartScreen("slide-out");
+  setTimeout(() => {
+    setClassesToStartScreen("hidden");
+  }, 1000);
+  setClassesToGameScreen("slide-in");
+
   board.classList.remove("hidden");
   topBar.classList.remove("hidden");
-  board.classList.add("active");
-  topBar.classList.add("active");
+
   scoreBoard.style.display = "flex";
   if (state.AIMark == "x") {
     showOponentMessage();
