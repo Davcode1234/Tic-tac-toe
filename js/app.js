@@ -3,6 +3,7 @@ const board = document.querySelector(".board");
 const startScreen = document.querySelector(".starter-screen");
 const gameScreen = document.querySelector(".game-screen");
 const topBar = document.querySelector(".top-bar");
+const quitBtn = document.querySelector(".quit-btn");
 const oponentMessage = document.querySelector(".oponent-paragraph");
 const restartBtn = document.querySelector(".restart-btn");
 const scoreBoard = document.querySelector(".score-board");
@@ -141,12 +142,17 @@ function restartGame(quit = false) {
 }
 
 const quitGame = () => {
+  // startScreen.classList.remove("hidden");
+  gameScreen.classList.remove("slide-in");
   startScreen.classList.remove("hidden");
-  board.classList.add("hidden");
-  topBar.classList.add("hidden");
-  board.classList.remove("active");
-  topBar.classList.remove("active");
-  scoreBoard.style.display = "none";
+  setTimeout(() => {
+    startScreen.classList.remove("slide-out");
+  }, 100);
+  // board.classList.add("hidden");
+  // topBar.classList.add("hidden");
+  // board.classList.remove("active");
+  // topBar.classList.remove("active");
+  // scoreBoard.style.display = "none";
 };
 
 const switchTurn = () => {
@@ -517,6 +523,7 @@ const bindClickEvents = () => {
   });
 
   bindEventsToTiles();
+  quitBtn.addEventListener("click", quitGame);
 };
 
 const init = () => {

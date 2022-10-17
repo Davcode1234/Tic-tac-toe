@@ -5,7 +5,7 @@ body {
 .game-screen {
   position: absolute;
   margin: 0 auto;
-  transform: translateX(300%);
+  transform: translateX(350%);
   transition: all 1s ease;
 }
 
