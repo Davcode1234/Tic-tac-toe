@@ -75,6 +75,7 @@ const startGame = () => {
 
   board.classList.remove("hidden");
   topBar.classList.remove("hidden");
+  quitBtn.classList.remove("hidden");
 
   scoreBoard.style.display = "flex";
   if (state.AIMark == "x") {
