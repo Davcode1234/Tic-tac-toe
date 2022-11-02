@@ -153,6 +153,7 @@ const quitGame = () => {
   // board.classList.remove("active");
   // topBar.classList.remove("active");
   // scoreBoard.style.display = "none";
+  restartGame((quit = true));
 };
 
 const switchTurn = () => {
@@ -432,7 +433,7 @@ const handleModalOpen = (
       ) {
         closeModal(restartModal, restartContent);
         quitGame();
-        restartGame((quit = true));
+        // restartGame((quit = true));
       } else if (
         e.target.dataset.modal === "cancel" &&
         btn.textContent === "NO, CANCEL"
