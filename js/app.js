@@ -1,3 +1,6 @@
+import handleModalOpen from "./modal.js";
+import { checkWin, checkDraw } from "./result.js";
+
 const startBtn = document.querySelector(".cta-btn");
 const board = document.querySelector(".board");
 const startScreen = document.querySelector(".starter-screen");
@@ -7,6 +10,7 @@ const quitBtn = document.querySelector(".quit-btn");
 const oponentMessage = document.querySelector(".oponent-paragraph");
 const restartBtn = document.querySelector(".restart-btn");
 const scoreBoard = document.querySelector(".score-board");
+let player, XStart, restart, oWon, xWon, draw, tileClickTimeout, quit;
 const winMap = [
   [0, 1, 2],
   [3, 4, 5],
@@ -57,6 +61,7 @@ const updatePlayerMark = (pickedOption) => {
 };
 
 const startGame = () => {
+  XStart = true;
   const setClassesToStartScreen = (classs) => {
     startScreen.classList.add(classs);
   };
@@ -84,7 +89,7 @@ const startGame = () => {
     disableBtn();
     disableMarkPreview();
   } else {
-    disableMarkPreview((XStart = true));
+    disableMarkPreview(XStart);
   }
   state = {
     ...state,
@@ -124,7 +129,8 @@ function clearBoard() {
   });
 }
 
-function restartGame(quit = false) {
+const restartGame = (quit = false) => {
+  XStart = true;
   clearBoard();
   state.Xturn = true;
   renderCurrentTurnMark();
@@ -137,10 +143,10 @@ function restartGame(quit = false) {
     AIPicking = true;
     disableMarkPreview();
   } else {
-    disableMarkPreview((XStart = true));
+    disableMarkPreview(XStart);
   }
   bindEventsToTiles();
-}
+};
 
 const quitGame = () => {
   // startScreen.classList.remove("hidden");
@@ -213,7 +219,11 @@ const disableBtn = () => {
     AIPicking = true;
 
     tile.style.cursor = "default";
-    if (!checkWin("x") && !checkWin("o") && !checkDraw()) {
+    if (
+      !checkWin("x", winMap, tiles) &&
+      !checkWin("o", winMap, tiles) &&
+      !checkDraw(tiles)
+    ) {
       setTimeout(() => {
         AIPicking = false;
         tile.style.cursor = "pointer";
@@ -256,6 +266,7 @@ const playerPick = (tile) => {
 };
 
 const AIPick = () => {
+  player = false;
   const emptySpaces = document.querySelectorAll(".empty");
   const randomIndex = Math.floor(Math.random() * emptySpaces.length);
   const mark = document.createElement("img");
@@ -267,19 +278,19 @@ const AIPick = () => {
   renderCurrentTurnMark();
 
   if (randomTile.classList.contains("empty")) {
-    handleMarkRender(randomTile, mark, (player = false));
+    handleMarkRender(randomTile, mark, player);
   } else if (randomTile.classList.contains("full")) {
     const randomEmptyTile = Array.from(emptySpaces)[randomIndex];
     if (randomEmptyTile) {
-      handleMarkRender(randomEmptyTile, mark, (player = false));
+      handleMarkRender(randomEmptyTile, mark, player);
     } else {
       return;
     }
   } else {
     return;
   }
-  if (checkWin(`${state.AIMark}`)) {
-    highlightWinnerTiles(`${state.AIMark}`);
+  if (checkWin(`${state.AIMark}`, winMap, tiles)) {
+    renderWinnerScreen(`${state.AIMark}`);
     localStorage.setItem(AIWinsLSKey, state.AIScore + 1);
 
     state = {
@@ -287,7 +298,7 @@ const AIPick = () => {
       AIScore: state.AIScore + 1,
     };
     renderScore();
-  } else if (checkDraw()) {
+  } else if (checkDraw(tiles)) {
     renderDrawScreen();
   }
   oponentMessage.classList.add("hidden");
@@ -325,8 +336,8 @@ const handleTileClick = (e) => {
   const tile = e.target;
   playerPick(tile);
   tileClickTimeout = setTimeout(AIPick, 3000);
-  if (checkWin(`${state.playerMark}`)) {
-    highlightWinnerTiles(`${state.playerMark}`);
+  if (checkWin(`${state.playerMark}`, winMap, tiles)) {
+    renderWinnerScreen(`${state.playerMark}`);
     clearTimeout(tileClickTimeout);
     oponentMessage.classList.add("hidden");
     localStorage.setItem(playerWinsLSKey, state.playerScore + 1);
@@ -335,12 +346,16 @@ const handleTileClick = (e) => {
       playerScore: state.playerScore + 1,
     };
     renderScore();
-  } else if (checkDraw()) {
+  } else if (checkDraw(tiles)) {
     renderDrawScreen();
   }
 };
 
 const renderDrawScreen = () => {
+  restart = false;
+  oWon = false;
+  xWon = false;
+  draw = true;
   clearTimeout(tileClickTimeout);
   oponentMessage.classList.add("hidden");
   localStorage.setItem(drawsLSKey, state.draws + 1);
@@ -350,98 +365,63 @@ const renderDrawScreen = () => {
   };
   renderScore();
   handleModalOpen(
-    (restart = false),
-    (xWon = false),
-    (oWon = false),
-    (draw = true)
+    restart,
+    xWon,
+    oWon,
+    draw,
+    state,
+    quit,
+    restartGame,
+    quitGame
   );
 };
-
-const closeModal = (background, content) => {
-  background.classList.remove("active-modal");
-  content.classList.remove("active-modal-content");
-};
-
-const handleModalOpen = (
-  restart = false,
-  xWon = false,
-  oWon = false,
-  draw = false
-) => {
-  const restartModal = document.querySelector(".restart-modal");
-  const restartContent = document.querySelector(".modal-content");
-  const paragraph = document.querySelector(".modal-content--paragraph");
-  const decisionParagraph = document.querySelector(".decision-paragraph");
-  const mark = document.querySelector(".modal-content--img");
-  const cancelBtn = document.querySelector(".cancel-cta-btn");
-  const restartBtn = document.querySelector(".restart-cta-btn");
-  const btnWrapper = document.querySelectorAll(".btn-wrapper button");
-  const btnContent = ["QUIT", "NEXT ROUND"];
-  const [left, right] = btnContent;
-
-  const addTextContent = (
-    paragraphText,
-    decisionParagraphText,
-    firstBtn,
-    secondBtn,
-    markSrc
-  ) => {
-    paragraph.textContent = paragraphText;
-    decisionParagraph.textContent = decisionParagraphText;
-    cancelBtn.textContent = firstBtn;
-    restartBtn.textContent = secondBtn;
-    mark.src = markSrc;
-  };
-
-  if (restart) {
-    addTextContent("RESTART GAME", "", "NO, CANCEL", "YES, RESTART");
-  } else if (xWon) {
-    addTextContent(
-      `TAKES THE ROUND`,
-      state.playerMark === "x" ? `You won!` : "Oops, you lost...",
-      `${left}`,
-      `${right}`,
-      `./images/icons/icon-x.svg`
-    );
-    paragraph.style.color = `#31c3bd`;
-  } else if (oWon) {
-    addTextContent(
-      `TAKES THE ROUND`,
-      state.playerMark === "o" ? `You won!` : "Oops, you lost...",
-      `${left}`,
-      `${right}`,
-      `./images/icons/icon-o.svg`
-    );
-    paragraph.style.color = `#f2b137`;
-  } else if (draw) {
-    addTextContent("DRAW", "", `${left}`, `${right}`);
-  }
-  restartModal.classList.add("active-modal");
-  restartContent.classList.add("active-modal-content");
-  restartModal.addEventListener("click", () => {
-    closeModal(restartModal, restartContent);
-  });
-
-  btnWrapper.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      if (e.target.dataset.modal === "restart") {
-        closeModal(restartModal, restartContent);
-        restartGame((quit = false));
-      } else if (
-        e.target.dataset.modal === "cancel" &&
-        btn.textContent === "QUIT"
-      ) {
-        closeModal(restartModal, restartContent);
-        quitGame();
-        // restartGame((quit = true));
-      } else if (
-        e.target.dataset.modal === "cancel" &&
-        btn.textContent === "NO, CANCEL"
-      ) {
-        closeModal(restartModal, restartContent);
-      }
+const renderWinnerScreen = (mark) => {
+  winMap.forEach((combination) => {
+    let check = combination.every((id) => {
+      return tiles[id].classList.contains(mark);
     });
+
+    if (check) {
+      combination.forEach((winId) => {
+        let tile = tiles[winId];
+        let image = tile.firstChild;
+        if (tile.classList.contains("x")) {
+          restart = false;
+          oWon = false;
+          draw = false;
+          xWon = true;
+          tile.classList.add("x-won");
+          image.src = "images/icons/icon-x-black.svg";
+          handleModalOpen(
+            restart,
+            xWon,
+            oWon,
+            draw,
+            state,
+            quit,
+            restartGame,
+            quitGame
+          );
+        } else if (tile.classList.contains("o")) {
+          restart = false;
+          xWon = false;
+          draw = false;
+          oWon = true;
+          tile.classList.add("o-won");
+          image.src = "images/icons/icon-o-black.svg";
+          handleModalOpen(
+            restart,
+            xWon,
+            oWon,
+            draw,
+            state,
+            quit,
+            restartGame,
+            quitGame
+          );
+        }
+      });
+    }
   });
 };
 
@@ -468,43 +448,6 @@ const renderScore = () => {
   }
 };
 
-const highlightWinnerTiles = (mark) => {
-  winMap.forEach((combination) => {
-    let check = combination.every((id) => {
-      return tiles[id].classList.contains(mark);
-    });
-
-    if (check) {
-      combination.forEach((winId) => {
-        let tile = tiles[winId];
-        let image = tile.firstChild;
-        if (tile.classList.contains("x")) {
-          tile.classList.add("x-won");
-          image.src = "images/icons/icon-x-black.svg";
-          handleModalOpen((restart = false), (xWon = true), (oWon = false));
-        } else if (tile.classList.contains("o")) {
-          tile.classList.add("o-won");
-          image.src = "images/icons/icon-o-black.svg";
-          handleModalOpen((restart = false), (xWon = false), (oWon = true));
-        }
-      });
-    }
-  });
-};
-const checkWin = (mark) => {
-  return winMap.some((combination) => {
-    return combination.every((id) => {
-      return tiles[id].classList.contains(mark);
-    });
-  });
-};
-
-const checkDraw = () => {
-  return tiles.every((tile) => {
-    return tile.classList.contains("full");
-  });
-};
-
 function bindEventsToTiles() {
   tiles.forEach((tile) => {
     tile.addEventListener("click", handleTileClick);
@@ -516,11 +459,19 @@ function bindEventsToTiles() {
 const bindClickEvents = () => {
   startBtn.addEventListener("click", startGame);
   restartBtn.addEventListener("click", () => {
+    restart = true;
+    xWon = false;
+    oWon = false;
+    draw = false;
     handleModalOpen(
-      (restart = true),
-      (xWon = false),
-      (oWon = false),
-      (draw = false)
+      restart,
+      xWon,
+      oWon,
+      draw,
+      state,
+      quit,
+      restartGame,
+      quitGame
     );
   });
 
