@@ -3,7 +3,7 @@ const closeModal = (background, content) => {
   content.classList.remove("active-modal-content");
 };
 
-const handleModalOpen = (
+const openModal = (
   restart = false,
   xWon = false,
   oWon = false,
@@ -91,4 +91,4 @@ const handleModalOpen = (
   });
 };
 
-export default handleModalOpen;
+export default openModal;
