@@ -1,5 +1,13 @@
-import handleModalOpen from "./modal.js";
+import openModal from "./modal.js";
 import { checkWin, checkDraw } from "./result.js";
+import {
+  createBoard,
+  tiles,
+  startGame,
+  quitGame,
+  restartGame,
+  showOponentMessage,
+} from "./dom-utils.js";
 
 const startBtn = document.querySelector(".cta-btn");
 const board = document.querySelector(".board");
@@ -25,18 +33,19 @@ const winMap = [
 const playerWinsLSKey = "playerWins";
 const AIWinsLSKey = "AIWins";
 const drawsLSKey = "draws";
-let tiles = [],
-  timeOutId;
-const boardSize = 9;
-let AIPicking = false;
+// let tiles = [],
+let timeOutId;
+// const boardSize = 9;
 
-let state = {
+// Move tiles array to state object
+export let state = {
   playerMark: "x",
   AIMark: "o",
   Xturn: true,
   playerScore: Number(localStorage.getItem(playerWinsLSKey)) || 0,
   AIScore: Number(localStorage.getItem(AIWinsLSKey)) || 0,
   draws: Number(localStorage.getItem(drawsLSKey)) || 0,
+  AIPicking: false,
 };
 
 const updateAIMark = () => {
@@ -60,108 +69,122 @@ const updatePlayerMark = (pickedOption) => {
   };
 };
 
-const startGame = () => {
-  XStart = true;
-  const setClassesToStartScreen = (classs) => {
-    startScreen.classList.add(classs);
-  };
-
-  const setClassesToGameScreen = (classs) => {
-    // board.classList.add(classs);
-    // topBar.classList.add(classs);
-    gameScreen.classList.add(classs);
-  };
-
-  setClassesToStartScreen("slide-out");
-  setTimeout(() => {
-    setClassesToStartScreen("hidden");
-  }, 1000);
-  setClassesToGameScreen("slide-in");
-
-  board.classList.remove("hidden");
-  topBar.classList.remove("hidden");
-  quitBtn.classList.remove("hidden");
-
-  scoreBoard.style.display = "flex";
-  if (state.AIMark == "x") {
-    showOponentMessage();
-    setTimeout(AIPick, 3000);
-    disableBtn();
-    disableMarkPreview();
-  } else {
-    disableMarkPreview(XStart);
-  }
+export const updateXTurn = () => {
   state = {
     ...state,
     Xturn: true,
   };
-
-  renderCurrentTurnMark();
-  renderScore();
-};
-const createBoard = () => {
-  for (let i = 0; i < boardSize; i++) {
-    const tile = document.createElement("button");
-    tile.classList.add("tile", "empty");
-    tiles.push(tile);
-    board.appendChild(tile);
-  }
 };
 
-function clearBoard() {
-  tiles.forEach((tile) => {
-    tile.classList.remove("full");
-    tile.classList.add("empty");
-    tile.style.cursor = "pointer";
-    tile.disabled = false;
-
-    tile.classList.contains("x")
-      ? tile.classList.remove("x")
-      : tile.classList.remove("o");
-
-    tile.classList.contains("x-won")
-      ? tile.classList.remove("x-won")
-      : tile.classList.remove("o-won");
-    if (tile.hasChildNodes()) {
-      const mark = document.querySelector(".markImage");
-      tile.removeChild(mark);
-    }
-  });
-}
-
-const restartGame = (quit = false) => {
-  XStart = true;
-  clearBoard();
-  state.Xturn = true;
-  renderCurrentTurnMark();
-  AIPicking = false;
-  if (state.AIMark === "x" && !quit) {
-    showOponentMessage();
-    clearTimeout(timeOutId);
-    timeOutId = setTimeout(AIPick, 3000);
-    disableBtn();
-    AIPicking = true;
-    disableMarkPreview();
-  } else {
-    disableMarkPreview(XStart);
-  }
-  bindEventsToTiles();
+export const updateAIPicking = (bool) => {
+  state = {
+    ...state,
+    AIPicking: bool,
+  };
 };
 
-const quitGame = () => {
-  // startScreen.classList.remove("hidden");
-  gameScreen.classList.remove("slide-in");
-  startScreen.classList.remove("hidden");
-  setTimeout(() => {
-    startScreen.classList.remove("slide-out");
-  }, 100);
-  // board.classList.add("hidden");
-  // topBar.classList.add("hidden");
-  // board.classList.remove("active");
-  // topBar.classList.remove("active");
-  // scoreBoard.style.display = "none";
-  restartGame((quit = true));
-};
+// const startGame = () => {
+//   XStart = true;
+//   const setClassesToStartScreen = (classs) => {
+//     startScreen.classList.add(classs);
+//   };
+
+//   const setClassesToGameScreen = (classs) => {
+//     // board.classList.add(classs);
+//     // topBar.classList.add(classs);
+//     gameScreen.classList.add(classs);
+//   };
+
+//   setClassesToStartScreen("slide-out");
+//   setTimeout(() => {
+//     setClassesToStartScreen("hidden");
+//   }, 1000);
+//   setClassesToGameScreen("slide-in");
+
+//   board.classList.remove("hidden");
+//   topBar.classList.remove("hidden");
+//   quitBtn.classList.remove("hidden");
+
+//   scoreBoard.style.display = "flex";
+//   if (state.AIMark == "x") {
+//     showOponentMessage();
+//     setTimeout(AIPick, 3000);
+//     disableBtn();
+//     disableMarkPreview();
+//   } else {
+//     disableMarkPreview(XStart);
+//   }
+//   state = {
+//     ...state,
+//     Xturn: true,
+//   };
+
+//   renderCurrentTurnMark();
+//   renderScore();
+// };
+// const createBoard = () => {
+//   for (let i = 0; i < boardSize; i++) {
+//     const tile = document.createElement("button");
+//     tile.classList.add("tile", "empty");
+//     tiles.push(tile);
+//     board.appendChild(tile);
+//   }
+// };
+
+// function clearBoard() {
+//   tiles.forEach((tile) => {
+//     tile.classList.remove("full");
+//     tile.classList.add("empty");
+//     tile.style.cursor = "pointer";
+//     tile.disabled = false;
+
+//     tile.classList.contains("x")
+//       ? tile.classList.remove("x")
+//       : tile.classList.remove("o");
+
+//     tile.classList.contains("x-won")
+//       ? tile.classList.remove("x-won")
+//       : tile.classList.remove("o-won");
+//     if (tile.hasChildNodes()) {
+//       const mark = document.querySelector(".markImage");
+//       tile.removeChild(mark);
+//     }
+//   });
+// }
+
+// const restartGame = (quit = false) => {
+//   XStart = true;
+//   clearBoard();
+//   state.Xturn = true;
+//   renderCurrentTurnMark();
+//   AIPicking = false;
+//   if (state.AIMark === "x" && !quit) {
+//     showOponentMessage();
+//     clearTimeout(timeOutId);
+//     timeOutId = setTimeout(AIPick, 3000);
+//     disableBtn();
+//     AIPicking = true;
+//     disableMarkPreview();
+//   } else {
+//     disableMarkPreview(XStart);
+//   }
+//   bindEventsToTiles();
+// };
+
+// const quitGame = () => {
+//   // startScreen.classList.remove("hidden");
+//   gameScreen.classList.remove("slide-in");
+//   startScreen.classList.remove("hidden");
+//   setTimeout(() => {
+//     startScreen.classList.remove("slide-out");
+//   }, 100);
+//   // board.classList.add("hidden");
+//   // topBar.classList.add("hidden");
+//   // board.classList.remove("active");
+//   // topBar.classList.remove("active");
+//   // scoreBoard.style.display = "none";
+//   restartGame((quit = true));
+// };
 
 const switchTurn = () => {
   state.Xturn = !state.Xturn;
@@ -214,9 +237,9 @@ const handleMarkRender = (tile, mark, player = true) => {
   removePreviewMark(tile);
 };
 
-const disableBtn = () => {
+export const disableBtn = () => {
   tiles.forEach((tile) => {
-    AIPicking = true;
+    updateAIPicking(true);
 
     tile.style.cursor = "default";
     if (
@@ -225,18 +248,18 @@ const disableBtn = () => {
       !checkDraw(tiles)
     ) {
       setTimeout(() => {
-        AIPicking = false;
+        updateAIPicking(false);
         tile.style.cursor = "pointer";
       }, 3000);
     }
   });
 };
 
-const showOponentMessage = () => {
-  oponentMessage.classList.remove("hidden");
-};
+// const showOponentMessage = () => {
+//   oponentMessage.classList.remove("hidden");
+// };
 
-function disableMarkPreview(XStart = false) {
+export function disableMarkPreview(XStart = false) {
   const setTilesBckgroundSize = (size) => {
     tiles.forEach((tile) => {
       tile.style.backgroundSize = `${size}%`;
@@ -265,7 +288,7 @@ const playerPick = (tile) => {
   disableMarkPreview();
 };
 
-const AIPick = () => {
+export const AIPick = () => {
   player = false;
   const emptySpaces = document.querySelectorAll(".empty");
   const randomIndex = Math.floor(Math.random() * emptySpaces.length);
@@ -304,7 +327,7 @@ const AIPick = () => {
   oponentMessage.classList.add("hidden");
 };
 
-const renderCurrentTurnMark = () => {
+export const renderCurrentTurnMark = () => {
   const currentTurnMark = document.querySelector(".turn-mark");
   if (state.Xturn) {
     currentTurnMark.src = `images/icons/icon-x-grey.svg`;
@@ -329,7 +352,7 @@ const handleTileHover = (e) => {
 };
 
 const handleTileClick = (e) => {
-  if (AIPicking) {
+  if (state.AIPicking) {
     return;
   }
   e.preventDefault();
@@ -364,16 +387,7 @@ const renderDrawScreen = () => {
     draws: state.draws + 1,
   };
   renderScore();
-  handleModalOpen(
-    restart,
-    xWon,
-    oWon,
-    draw,
-    state,
-    quit,
-    restartGame,
-    quitGame
-  );
+  openModal(restart, xWon, oWon, draw, state, quit, restartGame, quitGame);
 };
 const renderWinnerScreen = (mark) => {
   winMap.forEach((combination) => {
@@ -392,7 +406,7 @@ const renderWinnerScreen = (mark) => {
           xWon = true;
           tile.classList.add("x-won");
           image.src = "images/icons/icon-x-black.svg";
-          handleModalOpen(
+          openModal(
             restart,
             xWon,
             oWon,
@@ -409,7 +423,7 @@ const renderWinnerScreen = (mark) => {
           oWon = true;
           tile.classList.add("o-won");
           image.src = "images/icons/icon-o-black.svg";
-          handleModalOpen(
+          openModal(
             restart,
             xWon,
             oWon,
@@ -425,7 +439,7 @@ const renderWinnerScreen = (mark) => {
   });
 };
 
-const renderScore = () => {
+export const renderScore = () => {
   const ties = document.querySelector(".ties-score");
   const playerScore = document.querySelector(".player-score");
   const AIScore = document.querySelector(".AI-score");
@@ -448,7 +462,7 @@ const renderScore = () => {
   }
 };
 
-function bindEventsToTiles() {
+export function bindEventsToTiles() {
   tiles.forEach((tile) => {
     tile.addEventListener("click", handleTileClick);
     tile.addEventListener("mouseenter", handleTileHover);
@@ -463,16 +477,7 @@ const bindClickEvents = () => {
     xWon = false;
     oWon = false;
     draw = false;
-    handleModalOpen(
-      restart,
-      xWon,
-      oWon,
-      draw,
-      state,
-      quit,
-      restartGame,
-      quitGame
-    );
+    openModal(restart, xWon, oWon, draw, state, quit, restartGame, quitGame);
   });
 
   bindEventsToTiles();
