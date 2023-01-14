@@ -18,7 +18,7 @@ const scoreBoard = document.querySelector(".score-board");
 const quitBtn = document.querySelector(".quit-btn");
 const oponentMessage = document.querySelector(".oponent-paragraph");
 
-let XStart, quit;
+let XStart, quit, timeOutId;
 export let tiles = [];
 const boardSize = 9;
 
