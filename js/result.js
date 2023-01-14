@@ -1,4 +1,4 @@
-import openModal from "./modal.js";
+// import openModal from "./modal.js";
 
 export const checkWin = (mark, winMap, tiles) => {
   return winMap.some((combination) => {
